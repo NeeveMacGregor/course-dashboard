@@ -1090,7 +1090,7 @@ function wireCardEvents() {
 
 document.getElementById("add-course-btn").addEventListener("click", addCourse);
 
-if (APPS_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbx8nPigWR5nLl8B0I0_2tWlEE13ufeQRyyz2c6veLHL95IY4jo4653lv6O6jilQzGoQ/exec") {
+if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("script.google.com") === -1) {
   document.getElementById("courses").innerHTML =
     '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">' +
       '<p style="font-size: 15px; font-weight: 500; color: var(--text);">Setup needed</p>' +
