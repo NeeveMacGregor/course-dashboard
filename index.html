@@ -1,1310 +1,1021 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vinny's Juul Taper</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#FAFAF7" />
+<title>Course Dashboard</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ===================================================================
+     REPLACE the APPS_SCRIPT_URL constant below with your deployment URL
+     =================================================================== */
+
   :root {
-    --bg: #0b0a0d;
-    --bg-deeper: #050507;
-    --surface: #141318;
-    --surface-raised: #1c1b21;
-    --surface-hover: #252329;
-    --border: #26252c;
-    --border-strong: #3a3842;
-    --border-hero: #4a4852;
-    --text: #faf7f2;
-    --text-muted: #a09a94;
-    --text-light: #5f5a56;
-    --purple: #c78cff;
-    --purple-bright: #e0b3ff;
-    --purple-deep: #2a1540;
-    --purple-glow: rgba(199, 140, 255, 0.15);
-    --teal: #5dd4b0;
-    --teal-deep: #0f3a2d;
-    --amber: #f0b060;
-    --amber-bright: #ffc878;
-    --amber-deep: #3a2410;
-    --amber-glow: rgba(240, 176, 96, 0.15);
-    --cream: #f5ead5;
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --surface-alt: #F7F6F2;
+    --border: rgba(0,0,0,0.15);
+    --border-soft: rgba(0,0,0,0.1);
+    --text: #2C2C2A;
+    --text-muted: #5F5E5A;
+    --text-faint: #888780;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --green: #085041;
+    --green-bg: #E1F5EE;
+    --amber: #633806;
+    --amber-bg: #FAEEDA;
+    --red: #791F1F;
+    --red-bg: #FCEBEB;
+    --purple: #3C3489;
+    --purple-bg: #EEEDFE;
+    --gray: #444441;
+    --gray-bg: #F1EFE8;
   }
+
+  * { box-sizing: border-box; }
+
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.55;
-    padding: 0;
-    max-width: 640px;
-    margin: 0 auto;
-    -webkit-font-smoothing: antialiased;
-    position: relative;
-    min-height: 100vh;
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: radial-gradient(circle at 50% 0%, rgba(199, 140, 255, 0.08), transparent 55%);
-  }
-  body > * { position: relative; z-index: 1; }
-  .wrap {
-    padding: 20px 20px 48px;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  .header {
-    padding: 12px 0 28px;
-    border-bottom: none;
-    margin-bottom: 22px;
-    text-align: left;
-  }
-  .header .greeting {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--purple);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 26px;
-    display: inline-block;
-    padding: 7px 12px;
-    border: 1px solid var(--purple);
-    border-radius: 2px;
-    background: var(--purple-glow);
-  }
-  h1 {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 60px;
-    font-weight: 400;
-    margin-bottom: 14px;
-    letter-spacing: -0.04em;
-    line-height: 0.9;
-    color: var(--cream);
-    text-transform: uppercase;
-  }
-  h1 em {
-    font-style: normal;
-    color: var(--purple);
-    font-weight: 400;
-  }
-  .subtitle {
-    font-size: 17px;
-    color: var(--text-muted);
-    max-width: 420px;
     margin: 0;
-    line-height: 1.45;
+    padding: 1.5rem 1rem;
+    line-height: 1.5;
   }
-  h2 {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 26px;
-    font-weight: 400;
-    margin: 36px 0 12px;
-    letter-spacing: -0.025em;
-    color: var(--cream);
-    text-transform: uppercase;
+
+  .wrap { max-width: 1100px; margin: 0 auto; }
+
+  .app-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
   }
-  h2 .emoji {
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
-    margin-left: 4px;
+  .app-header h1 { font-size: 22px; font-weight: 500; margin: 0; }
+  .app-header p { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+
+  .save-status {
+    font-size: 12px; color: var(--text-faint);
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 6px; background: var(--surface-alt);
+    min-width: 80px; justify-content: center;
   }
-  .section-note {
-    font-size: 15px;
-    color: var(--text-muted);
-    margin-bottom: 14px;
+  .save-status.saving { color: var(--amber); }
+  .save-status.saved { color: var(--green); }
+  .save-status.error { color: var(--red); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; color: var(--text);
+    border: 0.5px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
   }
-  .weeks {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--surface);
+  .btn:hover { background: var(--surface-alt); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; font-weight: 400; }
+  .btn-xs { padding: 3px 8px; font-size: 11px; font-weight: 400; }
+  .btn-danger { color: var(--red); border: none; }
+  .btn-danger:hover { background: var(--red-bg); }
+
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 1.5rem;
   }
-  .week-block {
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-    transition: background 0.2s ease;
-  }
-  .week-block:last-child { border-bottom: none; }
-  .week-block.open {
-    background: var(--surface-raised);
-  }
-  .week-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px 18px;
-    background: transparent;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    text-align: left;
-    font-family: inherit;
-    color: var(--text);
-    transition: background 0.15s ease;
-  }
-  .week-header:hover { background: var(--surface-hover); }
-  .week-number {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 38px;
-    font-weight: 400;
-    color: var(--text-light);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    letter-spacing: -0.05em;
-    flex-shrink: 0;
-    width: 48px;
-    transition: color 0.2s ease;
-  }
-  .week-block.open .week-number { color: var(--purple); }
-  .week-header-left {
-    flex: 1;
-    min-width: 0;
-  }
-  .week-header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  .week-pods {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--cream);
-    line-height: 1.2;
-    margin-bottom: 3px;
-  }
-  .week-block.open .week-pods { color: var(--purple-bright); }
-  .week-note {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.3;
-  }
-  .week-progress-pill {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    padding: 6px 10px;
-    border: 1px solid var(--border-strong);
-    border-radius: 2px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.06em;
-    background: var(--bg-deeper);
-  }
-  .week-block.open .week-progress-pill {
-    border-color: var(--purple);
-    color: var(--purple-bright);
-  }
-  .chevron {
-    font-size: 10px;
-    color: var(--text-light);
-    width: 10px;
-    text-align: center;
-    transition: transform 0.2s ease, color 0.2s ease;
-  }
-  .week-block.open .chevron { color: var(--purple); }
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    margin-bottom: 8px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: var(--surface);
-    overflow: hidden;
-  }
-  .stat {
-    padding: 18px 14px;
-    text-align: left;
-    position: relative;
-    transition: background 0.25s ease;
-    border-right: 1px solid var(--border);
-  }
-  .stat:last-child { border-right: none; }
-  .stat-icon {
-    width: auto;
-    height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: 22px;
-    margin-bottom: 8px;
-    line-height: 1;
-    filter: grayscale(0.3) brightness(0.9);
-    transition: filter 0.3s ease, transform 0.3s ease;
-  }
-  .stat.active .stat-icon,
-  .stat.over .stat-icon {
-    filter: grayscale(0) brightness(1);
-  }
-  .stat-streak.active .stat-icon {
-    animation: flame-pulse 3.5s ease-in-out infinite;
-  }
-  @keyframes flame-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-  }
-  .stat-body { min-width: 0; }
-  .stat-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-    font-weight: 700;
-  }
-  .stat-value {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 44px;
-    font-weight: 400;
-    color: var(--cream);
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    letter-spacing: -0.035em;
-  }
-  .stat-streak.active .stat-value { color: var(--amber); }
-  .stat-avoided.active .stat-value { color: var(--teal); }
-  .stat-avoided.over .stat-value { color: var(--amber); }
-  .stat-money.active .stat-value { color: var(--purple-bright); }
-  @media (max-width: 520px) {
-    .stat { padding: 12px 10px; }
-    .stat-value { font-size: 28px; }
-    .stat-icon { font-size: 18px; margin-bottom: 6px; }
-    .stat-label { font-size: 9px; letter-spacing: 0.08em; margin-bottom: 6px; }
-  }
-  .days-wrap {
-    border-top: 1px solid var(--border);
-    padding: 10px 12px 12px;
-  }
-  .days-wrap {
-    border-top: 1px solid var(--border);
-    padding: 6px 18px 14px;
-    background: var(--bg-deeper);
-  }
-  .day-row {
-    display: grid;
-    grid-template-columns: 52px 1fr 28px;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 8px;
-    border-radius: 10px;
-    transition: background 0.25s ease;
-    position: relative;
-    border-bottom: 1px solid var(--border);
-  }
-  .day-row:last-of-type { border-bottom: none; }
-  .day-row.today::before {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 25%;
-    bottom: 25%;
-    width: 3px;
-    border-radius: 2px;
-    background: var(--purple);
-  }
-  .day-row.today .day-label {
-    color: var(--purple-bright);
-    font-weight: 600;
-  }
-  .day-row.pulse { animation: row-pulse 0.8s ease-out; }
-  @keyframes row-pulse {
-    0% { background: var(--purple-glow); }
-    100% { background: transparent; }
-  }
-  .day-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    color: var(--text-light);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .day-row.logged.under .day-label { color: var(--teal); }
-  .day-row.logged.over .day-label { color: var(--amber); }
-  .day-counter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-  }
-  .day-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    border: 1px solid var(--border-strong);
-    background: var(--surface-raised);
-    color: var(--cream);
-    font-size: 24px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    line-height: 1;
-    font-family: inherit;
-    transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    box-shadow: 0 1px 0 var(--bg-deeper), inset 0 1px 0 rgba(255,255,255,0.03);
-  }
-  .day-btn.minus:hover {
-    border-color: var(--teal);
-    color: var(--teal);
-    background: var(--teal-deep);
-  }
-  .day-btn.plus:hover {
-    border-color: var(--purple);
-    color: var(--purple-bright);
-    background: var(--purple-deep);
-  }
-  .day-btn:active {
-    transform: scale(0.9);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-  }
-  .day-btn.pop { animation: btn-pop 0.6s ease-out; }
-  @keyframes btn-pop {
-    0% { transform: scale(1); }
-    40% { transform: scale(1.18); box-shadow: 0 0 0 10px var(--purple-glow); }
-    100% { transform: scale(1); box-shadow: 0 1px 0 var(--bg-deeper); }
-  }
-  .day-btn.pop-teal { animation: btn-pop-teal 0.6s ease-out; }
-  @keyframes btn-pop-teal {
-    0% { transform: scale(1); }
-    40% { transform: scale(1.18); box-shadow: 0 0 0 10px rgba(93, 212, 176, 0.2); }
-    100% { transform: scale(1); box-shadow: 0 1px 0 var(--bg-deeper); }
-  }
-  .day-pods {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 26px;
-    font-weight: 400;
-    min-width: 42px;
-    text-align: center;
-    color: var(--cream);
-    font-variant-numeric: tabular-nums;
-    transition: color 0.2s ease;
-    letter-spacing: -0.04em;
-  }
-  .day-row.logged.under .day-pods { color: var(--teal); }
-  .day-row.logged.over .day-pods { color: var(--amber); }
-  .day-row:not(.logged) .day-pods { color: var(--text-light); }
-  .day-indicator {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.25s ease;
-    margin-left: auto;
-  }
-  .day-row:not(.logged) .day-indicator {
-    background: transparent;
-    border: 1px dashed var(--border-strong);
-  }
-  .day-row.logged.under .day-indicator {
-    background: var(--teal);
-    color: var(--bg-deeper);
-  }
-  .day-row.logged.over .day-indicator {
-    background: var(--amber);
-    color: var(--bg-deeper);
-  }
-  .day-indicator svg {
-    width: 12px;
-    height: 12px;
-  }
-  .week-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 8px 4px;
-    margin-top: 10px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .week-total-label {
-    font-family: 'Space Mono', monospace;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    font-size: 11px;
-  }
-  .week-total-value {
-    font-family: 'Space Mono', monospace;
-    color: var(--cream);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    font-size: 15px;
-    letter-spacing: 0.02em;
-  }
-  .week-total-value .current { color: var(--purple-bright); }
-  .week-total-value .separator { color: var(--text-light); margin: 0 6px; }
-  .week-total-value .target { color: var(--text-muted); }
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  @media (max-width: 520px) {
-    .cards { grid-template-columns: 1fr; gap: 10px; }
-  }
+  .metric { background: var(--surface-alt); border-radius: 8px; padding: 14px 16px; }
+  .metric-label { font-size: 13px; color: var(--text-muted); }
+  .metric-value { font-size: 24px; font-weight: 500; margin-top: 2px; }
+
+  .courses { display: flex; flex-direction: column; gap: 10px; }
+
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    position: relative;
-  }
-  .card::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    top: 0;
-    height: 2px;
-    border-radius: 0 0 2px 2px;
-  }
-  .card.green-accent::before { background: var(--teal); }
-  .card.amber-accent::before { background: var(--amber); }
-  .card-title {
-    font-family: 'Archivo Black', Impact, sans-serif;
-    font-size: 19px;
-    font-weight: 400;
-    letter-spacing: -0.015em;
-    margin-bottom: 16px;
-    color: var(--cream);
-    padding-top: 4px;
-    text-transform: uppercase;
-  }
-  .card.green-accent .card-title { color: var(--teal); }
-  .card.amber-accent .card-title { color: var(--amber); }
-  .card p {
-    font-size: 14.5px;
-    margin-bottom: 10px;
-    line-height: 1.5;
-    color: var(--text-muted);
-  }
-  .card p:last-child { margin-bottom: 0; }
-  .card p strong {
-    font-weight: 600;
-    color: var(--cream);
-    display: block;
-    margin-bottom: 2px;
-    font-size: 15px;
-  }
-  .card p {
-    padding-bottom: 8px;
-    border-bottom: 1px dashed var(--border);
-  }
-  .card p:last-child {
-    padding-bottom: 0;
-    border-bottom: none;
-  }
-  .tools {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-  @media (max-width: 520px) {
-    .tools { grid-template-columns: repeat(2, 1fr); }
-  }
-  .tool {
-    padding: 14px 14px;
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background: transparent;
-  }
-  .tool:nth-child(3n) { border-right: none; }
-  .tool:nth-last-child(-n+3) { border-bottom: none; }
-  @media (max-width: 520px) {
-    .tool { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .tool:nth-child(3n) { border-right: 1px solid var(--border); }
-    .tool:nth-child(2n) { border-right: none; }
-    .tool:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
-    .tool:nth-last-child(-n+2) { border-bottom: none; }
-  }
-  .tool-name {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: var(--cream);
-    letter-spacing: -0.01em;
-  }
-  .tool-when {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-  }
-  .timeline {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-  .milestone {
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 20px;
-    align-items: baseline;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s ease;
-  }
-  .milestone:last-child { border-bottom: none; }
-  .milestone-week {
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--cream);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .milestone:nth-child(1) .milestone-week, .milestone:nth-child(2) .milestone-week { color: var(--amber); }
-  .milestone:nth-child(3) .milestone-week, .milestone:nth-child(4) .milestone-week, .milestone:nth-child(5) .milestone-week { color: var(--cream); }
-  .milestone:nth-child(6) .milestone-week, .milestone:nth-child(7) .milestone-week { color: var(--teal); }
-  .milestone:nth-child(8) .milestone-week { color: var(--purple-bright); }
-  .milestone-body {
-    font-size: 14.5px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-  .timeline-source {
-    font-size: 11px;
-    color: var(--text-light);
-    margin-top: 12px;
-    text-align: right;
-    font-style: italic;
-    letter-spacing: 0.02em;
-  }
-  .footer {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-light);
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
-    margin-top: 48px;
-    letter-spacing: 0.04em;
-  }
-  .reset-btn {
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    color: var(--text-light);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: inherit;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 600;
-    transition: all 0.15s ease;
-  }
-  .reset-btn:hover {
-    border-color: var(--purple);
-    color: var(--purple-bright);
-    background: var(--purple-glow);
-  }
-  .reset-btn.armed {
-    border-color: var(--amber);
-    color: var(--amber);
-    background: var(--amber-deep);
-  }
-  .progress-footer {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-top: 24px;
-  }
-  .sync-status {
-    font-size: 11px;
-    color: var(--text-light);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 600;
-    transition: opacity 0.2s ease;
-  }
-  .sync-status.syncing { color: var(--text-muted); }
-  .sync-status.synced { color: var(--teal); }
-  .sync-status.error { color: var(--amber); }
-
-  /* ================== MOTION DETAILS ================== */
-  /* Streak just incremented - one-shot scale celebration */
-  .stat-streak.just-incremented .stat-icon {
-    animation: streak-celebrate 0.9s cubic-bezier(0.22, 1.2, 0.36, 1);
-  }
-  @keyframes streak-celebrate {
-    0% { transform: scale(1); }
-    35% { transform: scale(1.45); }
-    70% { transform: scale(0.95); }
-    100% { transform: scale(1); }
-  }
-  /* Override breathing pulse when celebrating */
-  .stat-streak.just-incremented.active .stat-icon {
-    animation: streak-celebrate 0.9s cubic-bezier(0.22, 1.2, 0.36, 1);
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
   }
 
-  /* Week completion — underline fills left-to-right */
-  .week-number {
-    position: relative;
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
   }
-  .week-number::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -4px;
-    height: 2px;
-    background: var(--purple);
-    transform-origin: left;
-    transform: scaleX(0);
-    border-radius: 1px;
+  .card-chevron { color: var(--text-muted); flex-shrink: 0; }
+  .card-titles { flex: 1; min-width: 0; }
+  .card-title-row {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
   }
-  .week-block.completed .week-number::after {
-    transform: scaleX(1);
-    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .week-block.completed.just-completed .week-number::after {
-    animation: week-complete-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  @keyframes week-complete-draw {
-    0% { transform: scaleX(0); }
-    100% { transform: scaleX(1); }
-  }
-  .week-block.completed .week-number { color: var(--purple); }
+  .card-code { font-weight: 500; font-size: 15px; }
+  .card-name { font-size: 14px; color: var(--gray); }
+  .card-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
 
-  /* Day rows stagger in when week is newly opened */
-  .week-block.just-opened .day-row {
-    animation: day-row-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  .badge {
+    font-size: 12px; font-weight: 500; padding: 3px 10px;
+    border-radius: 8px; display: inline-flex; align-items: center; gap: 4px;
+    white-space: nowrap;
   }
-  .week-block.just-opened .day-row[data-day="0"] { animation-delay: 0ms; }
-  .week-block.just-opened .day-row[data-day="1"] { animation-delay: 60ms; }
-  .week-block.just-opened .day-row[data-day="2"] { animation-delay: 120ms; }
-  .week-block.just-opened .day-row[data-day="3"] { animation-delay: 180ms; }
-  .week-block.just-opened .day-row[data-day="4"] { animation-delay: 240ms; }
-  .week-block.just-opened .day-row[data-day="5"] { animation-delay: 300ms; }
-  .week-block.just-opened .day-row[data-day="6"] { animation-delay: 360ms; }
-  @keyframes day-row-in {
-    0% { opacity: 0; transform: translateY(-4px); }
-    100% { opacity: 1; transform: translateY(0); }
+  .badge-stage-Planning   { background: var(--gray-bg);   color: var(--gray); }
+  .badge-stage-Build      { background: var(--blue-bg);   color: var(--blue); }
+  .badge-stage-Review     { background: var(--purple-bg); color: var(--purple); }
+  .badge-stage-Pre-launch { background: var(--amber-bg);  color: var(--amber); }
+  .badge-stage-Live       { background: var(--green-bg);  color: var(--green); }
+  .badge-stage-Archived   { background: var(--gray-bg);   color: var(--text-muted); }
+
+  .badge-status-On-track { background: var(--green-bg); color: var(--green); }
+  .badge-status-At-risk  { background: var(--amber-bg); color: var(--amber); }
+  .badge-status-Blocked  { background: var(--red-bg);   color: var(--red); }
+  .badge-status-Done     { background: var(--purple-bg);color: var(--purple); }
+
+  .progress-bar {
+    width: 110px; height: 6px; background: var(--gray-bg);
+    border-radius: 4px; overflow: hidden; flex-shrink: 0;
+  }
+  .progress-fill { height: 100%; background: #378ADD; transition: width 0.2s; }
+  .progress-text { font-size: 12px; color: var(--text-muted); min-width: 30px; text-align: right; }
+
+  .card-body {
+    border-top: 0.5px solid var(--border);
+    padding: 16px 16px 18px; background: var(--bg);
   }
 
-  /* Check mark draws in when earning "under limit" status */
-  .day-indicator svg path {
-    stroke-dasharray: 24;
-    stroke-dashoffset: 0;
+  .panel {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
   }
-  .day-row.logged.under.just-earned .day-indicator svg path {
-    animation: check-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 10px; flex-wrap: wrap;
   }
-  @keyframes check-draw {
-    0% { stroke-dashoffset: 24; }
-    100% { stroke-dashoffset: 0; }
+  .panel-title { font-size: 13px; font-weight: 500; }
+  .panel-actions { display: flex; align-items: center; gap: 10px; }
+
+  .tabs { display: flex; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+  .tab {
+    background: transparent; border: 0.5px solid transparent;
+    border-bottom: 0.5px solid var(--border); border-radius: 8px 8px 0 0;
+    padding: 7px 14px; font-size: 13px; color: var(--text-muted);
+    cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-bottom: -1px;
+  }
+  .tab.active {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--surface);
+    font-weight: 500; color: var(--text);
+  }
+  .tab-content {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-top: none; border-radius: 0 0 10px 10px; padding: 14px;
   }
 
-  /* Today indicator — subtle breathing on the purple bar */
-  .day-row.today::before {
-    animation: today-breath 5s ease-in-out infinite;
+  .empty { font-size: 12px; color: var(--text-faint); font-style: italic; }
+
+  .file-row {
+    display: flex; align-items: center; gap: 10px; padding: 6px 8px;
+    background: var(--surface-alt); border-radius: 6px; font-size: 12px;
   }
-  @keyframes today-breath {
-    0%, 100% { opacity: 0.85; }
-    50% { opacity: 1; }
+  .file-row-name { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-row-by { color: var(--text-muted); }
+  .file-row-when { color: var(--text-faint); min-width: 90px; text-align: right; }
+
+  .pin {
+    background: var(--surface-alt); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .pin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; gap: 8px; flex-wrap: wrap;
+  }
+  .pin-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--gray);
+  }
+  .pin-mode {
+    font-size: 10px; color: var(--text-faint); font-weight: 400;
+    background: var(--surface); padding: 1px 6px; border-radius: 3px;
+  }
+  .pin-body { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .pin-body .quote { font-style: italic; color: var(--gray); }
+  .pin-body .value { font-size: 15px; font-weight: 500; }
+  .pin-meta { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
+  .pin-error { font-size: 12px; color: var(--red); }
+  .pin-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
+  .pin-table td { padding: 3px 6px; border: 0.5px solid var(--border-soft); }
+
+  .pin-config {
+    background: var(--surface-alt); border: 0.5px solid var(--border-soft);
+    border-radius: 8px; padding: 10px; margin-bottom: 12px;
+  }
+  .pin-config-row {
+    background: var(--surface); border: 0.5px solid var(--border-soft);
+    border-radius: 6px; padding: 8px;
+    display: grid; grid-template-columns: 1.2fr 1.5fr 0.9fr 1.3fr auto;
+    gap: 6px; align-items: center; margin-bottom: 8px;
+  }
+  .pin-config-row:last-child { margin-bottom: 0; }
+  .pin-config-row input,
+  .pin-config-row select {
+    padding: 5px 8px; border: 0.5px solid var(--border);
+    border-radius: 4px; font-size: 12px; font-family: inherit;
+    background: var(--surface); color: var(--text); width: 100%;
+  }
+  .pin-config-row .pin-heading-input {
+    grid-column: 1 / -1; font-family: inherit;
+  }
+  .pin-config-row .mono { font-family: ui-monospace, "SF Mono", monospace; }
+  .pin-config-row .icon-btn {
+    background: transparent; border: none; padding: 4px; cursor: pointer;
+    color: var(--text-faint); display: flex;
   }
 
-  /* Stat values during count-up animation */
-  .stat-value.counting { will-change: contents; }
+  .fields-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 14px;
+  }
+  .fields-grid-2 {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 14px;
+  }
+  .field-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%; padding: 7px 10px; border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 8px; font-size: 13px; font-family: inherit;
+    background: var(--surface); color: var(--text);
+  }
+  .field-textarea { resize: vertical; min-height: 52px; }
+  input[type="range"] { width: 100%; }
 
-  /* ================== MOBILE OPTIMIZATION ================== */
-  @media (max-width: 520px) {
-    .wrap { padding: 18px 14px 40px; }
-    .header { padding: 8px 0 24px; margin-bottom: 20px; }
-    .header .greeting { font-size: 10px; margin-bottom: 18px; padding: 6px 10px; }
-    h1 { font-size: 42px; margin-bottom: 10px; letter-spacing: -0.045em; }
-    .subtitle { font-size: 14px; line-height: 1.4; }
-    h2 { font-size: 20px; margin: 28px 0 10px; }
-    .section-note { font-size: 13px; margin-bottom: 12px; line-height: 1.45; }
-    /* Stats stay 3 across but tighter */
-    .stats {
-      border-radius: 10px;
-      position: sticky;
-      top: 8px;
-      z-index: 10;
-      backdrop-filter: blur(12px);
-      background: rgba(20, 19, 24, 0.92);
-    }
-    .stat { padding: 12px 8px; }
-    .stat-icon { font-size: 16px; margin-bottom: 5px; }
-    .stat-label { font-size: 9px; letter-spacing: 0.06em; margin-bottom: 5px; }
-    .stat-value { font-size: 26px; letter-spacing: -0.04em; }
-    /* Week list tighter */
-    .week-header { padding: 12px 12px; gap: 10px; }
-    .week-number { font-size: 26px; width: 32px; }
-    .week-pods { font-size: 14px; }
-    .week-note { font-size: 12px; }
-    .week-progress-pill { font-size: 10px; padding: 4px 7px; }
-    /* Day rows much tighter */
-    .days-wrap { padding: 4px 12px 10px; }
-    .day-row { grid-template-columns: 40px 1fr 22px; gap: 8px; padding: 8px 4px; }
-    .day-label { font-size: 10px; letter-spacing: 0.05em; }
-    .day-btn { width: 36px; height: 36px; font-size: 20px; }
-    .day-pods { font-size: 22px; min-width: 32px; }
-    .day-counter { gap: 10px; }
-    .day-indicator { width: 18px; height: 18px; }
-    .day-indicator svg { width: 10px; height: 10px; }
-    .week-total { padding: 10px 4px 2px; margin-top: 8px; }
-    .week-total-label { font-size: 10px; }
-    .week-total-value { font-size: 13px; }
-    /* Cards tighter */
-    .card { padding: 14px 16px; }
-    .card-title { font-size: 16px; margin-bottom: 10px; }
-    .card p { font-size: 13px; margin-bottom: 7px; padding-bottom: 7px; }
-    .card p strong { font-size: 13.5px; }
-    /* Tools tighter */
-    .tool { padding: 11px 12px; }
-    .tool-name { font-size: 13px; }
-    .tool-when { font-size: 10px; letter-spacing: 0.06em; }
-    /* Timeline tighter */
-    .milestone { padding: 12px 14px; grid-template-columns: 92px 1fr; gap: 14px; }
-    .milestone-week { font-size: 12px; }
-    .milestone-body { font-size: 13px; }
-    .timeline-source { font-size: 10px; }
-    /* Footer tighter */
-    .footer { padding-top: 22px; margin-top: 32px; font-size: 11px; }
-    .reset-btn { padding: 8px 12px; font-size: 10px; }
-    .sync-status { font-size: 10px; }
-    .progress-footer { margin-top: 16px; gap: 10px; }
+  .tasks { display: flex; flex-direction: column; gap: 4px; }
+  .task {
+    display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+    background: var(--surface); border: 0.5px solid var(--border-soft);
+    border-radius: 6px;
+  }
+  .task-check {
+    background: transparent; border: none; padding: 0; cursor: pointer;
+    display: flex; color: var(--text-faint);
+  }
+  .task-check.done { color: #1D9E75; }
+  .task-text {
+    flex: 1; border: none; background: transparent; font-size: 13px;
+    padding: 2px 0; outline: none; font-family: inherit; color: var(--text);
+  }
+  .task-text.done { text-decoration: line-through; color: var(--text-faint); }
+  .task-due {
+    width: 110px; border: 0.5px solid var(--border-soft);
+    border-radius: 4px; padding: 3px 6px; font-size: 12px;
+    color: var(--text-muted); font-family: inherit;
+  }
+  .task-delete {
+    background: transparent; border: none; padding: 4px; cursor: pointer;
+    color: var(--text-faint); display: flex;
+  }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .section-title { font-size: 13px; font-weight: 500; }
+
+  .card-footer {
+    display: flex; justify-content: flex-end;
+    border-top: 0.5px solid var(--border-soft); padding-top: 10px; margin-top: 10px;
+  }
+
+  .inline-link {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 12px; color: var(--blue); text-decoration: none;
+    margin-top: 6px;
+  }
+  .inline-link:hover { text-decoration: underline; }
+
+  .canvas-summary {
+    font-size: 13px; line-height: 1.6;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .canvas-summary strong { font-weight: 500; }
+  .canvas-summary .label { color: var(--text-muted); }
+
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .icon { width: 14px; height: 14px; flex-shrink: 0; }
+  .icon-sm { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .footer-note {
+    margin-top: 1.5rem; font-size: 12px; color: var(--text-faint); text-align: center;
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 700px) {
+    body { padding: 0.75rem; }
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fields-grid, .fields-grid-2 { grid-template-columns: 1fr; }
+    .card-header { flex-wrap: wrap; }
+    .progress-bar { width: 80px; }
+    .card-header .badge { font-size: 11px; padding: 2px 8px; }
+    .pin-config-row { grid-template-columns: 1fr 1fr auto; }
+    .pin-config-row input[type="text"]:nth-child(2),
+    .pin-config-row select:nth-child(3),
+    .pin-config-row input:nth-child(4) { grid-column: span 2; }
+    .panel-header { flex-direction: column; align-items: flex-start; }
+    .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .tab { flex-shrink: 0; }
+    .canvas-summary { gap: 8px; }
+    .file-row { flex-wrap: wrap; }
+    .file-row-name { flex: 1 1 100%; }
+    .task-due { width: 90px; }
   }
 </style>
 </head>
 <body>
-
-<main class="wrap">
-
-<div class="header">
-  <div class="greeting">for vinny · from angel bby</div>
-  <h1>You got <em>this</em> daddy.</h1>
-  <p class="subtitle">8 weeks. 2 a day to 0. Let's get it, let's go.</p>
-</div>
-
-<div class="stats">
-  <div class="stat stat-streak">
-    <div class="stat-icon">🔥</div>
-    <div class="stat-body">
-      <div class="stat-label">Streak</div>
-      <div class="stat-value" id="streak-value">0</div>
+<div class="wrap">
+  <header class="app-header">
+    <div>
+      <h1>Course dashboard</h1>
+      <p>LXD project tracking · Drive + Canvas synthesis</p>
     </div>
-  </div>
-  <div class="stat stat-avoided">
-    <div class="stat-icon">💨</div>
-    <div class="stat-body">
-      <div class="stat-label">Pods skipped</div>
-      <div class="stat-value" id="avoided-value">0</div>
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <span id="save-status" class="save-status">Loading…</span>
+      <button id="add-course-btn" class="btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Add course
+      </button>
     </div>
-  </div>
-  <div class="stat stat-money">
-    <div class="stat-icon">💰</div>
-    <div class="stat-body">
-      <div class="stat-label">Saved</div>
-      <div class="stat-value" id="money-saved">$0</div>
-    </div>
-  </div>
-</div>
+  </header>
 
-<h2>The plan</h2>
-<p class="section-note">Tap a week to open it. Log each day with the buttons. Check = you hit the mark that day.</p>
+  <div id="metrics" class="metrics"></div>
+  <div id="courses" class="courses"></div>
 
-<div class="weeks" id="weeks-grid"></div>
-
-<div class="progress-footer">
-  <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
-  <span class="sync-status" id="sync-status"></span>
-</div>
-
-<h2>When a craving hits</h2>
-<div class="cards">
-  <div class="card green-accent">
-    <div class="card-title">Pick one, ride it out</div>
-    <p><strong>Wait it out</strong>Set a 10-min timer. Cravings peak fast, they fade faster.</p>
-    <p><strong>Cold water</strong>Slow sips. Resets the mouth thing.</p>
-    <p><strong>Breathe</strong>4 in, 7 hold, 8 out. Four rounds.</p>
-    <p><strong>Move</strong>Draw something, walk, stretch, step outside.</p>
-  </div>
-  <div class="card amber-accent">
-    <div class="card-title">Watch the sneaky ones</div>
-    <p><strong>Downtime at work</strong>Keep gum on you for the slow hours.</p>
-    <p><strong>After eating</strong>Walk outside 5 min first, then decide.</p>
-    <p><strong>In the car</strong>Put the pod in the trunk, not the console.</p>
-    <p><strong>Zoned out scrolling</strong>Lying in bed on your phone is when you hit it without even thinking. Leave the juul on the kitchen counter before you get in bed.</p>
+  <div class="footer-note">
+    Changes sync to Google Sheet · External data fetched on demand
   </div>
 </div>
-
-<h2>On deck</h2>
-<div class="tools">
-  <div class="tool"><div class="tool-name">Nicotine gum 4mg</div><div class="tool-when">Starting week 5</div></div>
-  <div class="tool"><div class="tool-name">Toothpicks</div><div class="tool-when">Mouth fidget</div></div>
-  <div class="tool"><div class="tool-name">Sugar-free mints</div><div class="tool-when">Fast craving fix</div></div>
-  <div class="tool"><div class="tool-name">Stress ball</div><div class="tool-when">Hand habit</div></div>
-  <div class="tool"><div class="tool-name">Seltzer</div><div class="tool-when">Ritual swap</div></div>
-  <div class="tool"><div class="tool-name">Ice cold Stanley</div><div class="tool-when">Sip through cravings</div></div>
-</div>
-
-<h2>What your body's doing</h2>
-<div class="timeline">
-  <div class="milestone"><div class="milestone-week">20 minutes</div><div class="milestone-body">Heart rate and blood pressure settle into a calmer rhythm.</div></div>
-  <div class="milestone"><div class="milestone-week">2 hours</div><div class="milestone-body">Half the nicotine is out. Your body's already resetting.</div></div>
-  <div class="milestone"><div class="milestone-week">Day 1</div><div class="milestone-body">Oxygen levels rise. Everything starts working better.</div></div>
-  <div class="milestone"><div class="milestone-week">Day 2</div><div class="milestone-body">Food starts tasting and smelling like it should again.</div></div>
-  <div class="milestone"><div class="milestone-week">Days 3–5</div><div class="milestone-body">Brain chemistry resetting. Push through, it gets easier fast.</div></div>
-  <div class="milestone"><div class="milestone-week">Day 10</div><div class="milestone-body">The hardest part's behind you. Smooth sailing from here.</div></div>
-  <div class="milestone"><div class="milestone-week">Week 2</div><div class="milestone-body">Breathing feels easier. Blood moves better to every muscle.</div></div>
-  <div class="milestone"><div class="milestone-week">1 month</div><div class="milestone-body">9 out of 10 quitters feel calmer and more in control.*</div></div>
-</div>
-<p class="timeline-source">*Truth Initiative survey of e-cigarette quitters</p>
-
-<div class="footer">
-  Saves to Google Sheets automatically. Works even when you're offline.
-</div>
-
-</main>
 
 <script>
-// =====================================================
-// PASTE YOUR APPS SCRIPT WEB APP URL HERE
-// (After deploying the Apps Script from apps_script.js)
-// =====================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8nPigWR5nLl8B0I0_2tWlEE13ufeQRyyz2c6veLHL95IY4jo4653lv6O6jilQzGoQ/exec';
-// =====================================================
+// =====================================================================
+// CONFIG — paste your Apps Script Web App deployment URL here
+// =====================================================================
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8nPigWR5nLl8B0I0_2tWlEE13ufeQRyyz2c6veLHL95IY4jo4653lv6O6jilQzGoQ/exec";
 
-const weeks = [
-  { n: 1, limit: 1.5, perDay: "1.5", weekly: 10, note: "Cut back a little, ease in" },
-  { n: 2, limit: 1.5, perDay: "1.5", weekly: 10, note: "Hold it down" },
-  { n: 3, limit: 1, perDay: "1", weekly: 7, note: "One a day, that's it" },
-  { n: 4, limit: 1, perDay: "1", weekly: 7, note: "Halfway, you locked in" },
-  { n: 5, limit: 0.5, perDay: "Half", weekly: 4, note: "Gum time" },
-  { n: 6, limit: 0.5, perDay: "Half", weekly: 4, note: "Almost there" },
-  { n: 7, limit: 0.25, perDay: "Quarter", weekly: 2, note: "Hardest week, ride it out" },
-  { n: 8, limit: 0, perDay: "None", weekly: 0, note: "Done. You did it 🔥" }
-];
+// State
+var state = {
+  courses: [],
+  expanded: {},       // courseId -> bool
+  activeTab: {},      // courseId -> "canvas" | "folder" | "pinned"
+  configuring: {},    // courseId -> bool
+  refreshing: {},     // courseId -> bool
+  lastRefresh: {},    // courseId -> time string
+  externalData: {}    // courseId -> { canvas, drive, pins }
+};
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const POD_COST = 6; // $/pod in Greenville SC (4-pack at ~$22-24 = ~$5.50-6)
-const BASELINE_DAILY = 2;
-const STORAGE_KEY = 'vinny_taper_progress_v2';
-const USING_SHEET = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE';
+var STAGES = ["Planning", "Build", "Review", "Pre-launch", "Live", "Archived"];
+var STATUSES = ["On track", "At risk", "Blocked", "Done"];
 
-// Progress shape: { "1-0": 1, "1-1": 2, ... } where key is "week-dayIndex" and value is pods used
-let progress = {};
-let expandedWeek = 1;
+// Save debouncing — each course has its own pending save
+var saveTimers = {};
+var SAVE_DEBOUNCE_MS = 500;
 
-// Always load localStorage first so UI is instant
-try {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    progress = parsed.progress || {};
-    expandedWeek = parsed.expandedWeek || 1;
-  }
-} catch(e) {}
+// ---------- API ----------
 
-const grid = document.getElementById('weeks-grid');
-const moneyEl = document.getElementById('money-saved');
-const streakEl = document.getElementById('streak-value');
-const avoidedEl = document.getElementById('avoided-value');
-const statusEl = document.getElementById('sync-status');
-const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-const DOT_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>';
-
-// Track which button was just pressed for pop animation
-let lastAction = null; // { weekN, dayIdx, type: 'plus' | 'minus' }
-
-// Animation state tracking
-let prevStats = { streak: 0, avoided: 0, saved: 0 };
-let prevUnderLimitDays = new Set(); // keys of days that were under-limit in last render
-let prevCompletedWeeks = new Set(); // week numbers that were 7/7 all-under last render
-let prevExpandedWeek = null; // tracks if the expanded week changed this render
-let firstRender = true;
-
-// Count-up tween for numeric stat values
-function tweenNumber(el, from, to, duration, formatter) {
-  const start = performance.now();
-  const fmt = formatter || ((v) => Math.round(v).toString());
-  function step(now) {
-    const t = Math.min(1, (now - start) / duration);
-    // ease-out cubic
-    const eased = 1 - Math.pow(1 - t, 3);
-    const val = from + (to - from) * eased;
-    el.textContent = fmt(val);
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = fmt(to);
-  }
-  requestAnimationFrame(step);
+function apiCall(params) {
+  var url = APPS_SCRIPT_URL + "?" + Object.keys(params).map(function (k) {
+    return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+  }).join("&");
+  return fetch(url).then(function (r) { return r.json(); });
 }
 
-function setStatus(text, type) {
-  if (!statusEl) return;
-  statusEl.textContent = text;
-  statusEl.className = 'sync-status' + (type ? ' ' + type : '');
-}
-
-function saveLocal() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ progress, expandedWeek }));
-  } catch(e) {}
-}
-
-function callSheet(params) {
-  if (!USING_SHEET) return Promise.resolve({ success: true });
-  const qs = new URLSearchParams(params).toString();
-  return fetch(APPS_SCRIPT_URL + '?' + qs, { method: 'GET', mode: 'cors' })
-    .then(r => r.json());
-}
-
-async function loadFromSheet() {
-  if (!USING_SHEET) return;
-  setStatus('Syncing...', 'syncing');
-  try {
-    const data = await callSheet({ action: 'load' });
-    if (data && !data.error) {
-      progress = data.progress || {};
-      expandedWeek = data.expandedWeek || 1;
-      saveLocal();
-      render();
-      setStatus('Synced', 'synced');
-      setTimeout(() => setStatus(''), 2000);
-    } else {
-      setStatus('Sync error', 'error');
+function loadCourses() {
+  setSaveStatus("loading", "Loading…");
+  return apiCall({ action: "load" }).then(function (resp) {
+    if (!resp.ok) throw new Error(resp.error);
+    state.courses = resp.courses;
+    // Default the first card open
+    if (state.courses.length > 0) state.expanded[state.courses[0].id] = true;
+    for (var i = 0; i < state.courses.length; i++) {
+      state.activeTab[state.courses[i].id] = "canvas";
     }
-  } catch (e) {
-    setStatus('Offline', 'error');
-  }
+    setSaveStatus("saved", "Loaded");
+    render();
+  }).catch(function (err) {
+    setSaveStatus("error", "Load failed");
+    alert("Could not load courses: " + err.message + "\n\nCheck your APPS_SCRIPT_URL.");
+  });
 }
 
-function getPods(weekN, dayIdx) {
-  const key = `${weekN}-${dayIdx}`;
-  return progress[key] || 0;
+function saveCourseDebounced(courseId) {
+  if (saveTimers[courseId]) clearTimeout(saveTimers[courseId]);
+  setSaveStatus("saving", "Saving…");
+  saveTimers[courseId] = setTimeout(function () {
+    var course = state.courses.find(function (c) { return c.id === courseId; });
+    if (!course) return;
+    apiCall({ action: "save", course: JSON.stringify(course) }).then(function (resp) {
+      if (!resp.ok) throw new Error(resp.error);
+      setSaveStatus("saved", "Saved");
+    }).catch(function (err) {
+      setSaveStatus("error", "Save failed");
+      console.error("Save failed:", err);
+    });
+  }, SAVE_DEBOUNCE_MS);
 }
 
-async function setPods(weekN, dayIdx, pods, actionType) {
-  const key = `${weekN}-${dayIdx}`;
-  if (pods <= 0) delete progress[key];
-  else progress[key] = pods;
-  lastAction = { weekN, dayIdx, type: actionType };
-  saveLocal();
+function setSaveStatus(kind, text) {
+  var el = document.getElementById("save-status");
+  el.className = "save-status " + kind;
+  el.textContent = text;
+}
+
+// ---------- Mutations ----------
+
+function updateField(courseId, field, value) {
+  var c = state.courses.find(function (c) { return c.id === courseId; });
+  if (!c) return;
+  c[field] = value;
+  saveCourseDebounced(courseId);
   render();
-
-  if (USING_SHEET) {
-    setStatus('Saving...', 'syncing');
-    try {
-      await callSheet({ action: 'setPods', week: weekN, day: dayIdx, pods: pods });
-      setStatus('Saved', 'synced');
-      setTimeout(() => setStatus(''), 1500);
-    } catch (e) {
-      setStatus('Will retry', 'error');
-    }
-  }
 }
 
-async function saveExpandedWeek() {
-  saveLocal();
-  if (USING_SHEET && expandedWeek) {
-    try {
-      await callSheet({ action: 'setExpandedWeek', week: expandedWeek });
-    } catch (e) {}
-  }
+function addCourse() {
+  var newCourse = {
+    id: "c" + Date.now(),
+    code: "NEW 0000", title: "New course", faculty: "",
+    stage: "Planning", status: "On track", platform: "Canvas",
+    startDate: "", targetLaunch: "", progress: 0, notes: "",
+    driveFolderId: "", canvasCourseId: "", pins: [], tasks: []
+  };
+  state.courses.push(newCourse);
+  state.expanded[newCourse.id] = true;
+  state.activeTab[newCourse.id] = "canvas";
+  saveCourseDebounced(newCourse.id);
+  render();
 }
 
-function weekStats(w) {
-  let logged = 0;
-  let daysLogged = 0;
-  let daysUnderLimit = 0;
-  for (let d = 0; d < 7; d++) {
-    const key = `${w.n}-${d}`;
-    if (key in progress) {
-      daysLogged++;
-      logged += progress[key];
-      if (progress[key] <= w.limit) daysUnderLimit++;
-    }
-  }
-  return { logged, daysLogged, daysUnderLimit };
-}
-
-// Compute current streak of consecutive at-or-under-limit days looking backwards
-// through the chronological logged days across all weeks
-function computeStreak() {
-  // Build a flat ordered list of (week, day, pods, limit) for every logged entry
-  const logged = [];
-  for (const key of Object.keys(progress)) {
-    const [w, d] = key.split('-').map(Number);
-    const week = weeks.find(x => x.n === w);
-    if (!week) continue;
-    logged.push({ w, d, pods: progress[key], limit: week.limit, order: w * 7 + d });
-  }
-  logged.sort((a, b) => a.order - b.order);
-  if (logged.length === 0) return 0;
-
-  // Count trailing consecutive at-or-under-limit days
-  let streak = 0;
-  for (let i = logged.length - 1; i >= 0; i--) {
-    if (logged[i].pods <= logged[i].limit) streak++;
-    else break;
-  }
-  return streak;
-}
-
-function computeAvoided() {
-  // Pods avoided = baseline (2/day) - actual, summed across logged days
-  // Can go negative if user exceeds baseline — shows visual impact of overuse
-  let avoided = 0;
-  Object.entries(progress).forEach(([key, pods]) => {
-    avoided += BASELINE_DAILY - pods;
+function deleteCourse(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (!confirm("Delete " + c.code + "?")) return;
+  apiCall({ action: "delete", id: courseId }).then(function (resp) {
+    if (!resp.ok) { alert("Delete failed: " + resp.error); return; }
+    state.courses = state.courses.filter(function (cc) { return cc.id !== courseId; });
+    setSaveStatus("saved", "Saved");
+    render();
   });
-  return avoided;
 }
 
-function render() {
-  // Compute current completed weeks and under-limit days for animation tracking
-  const currentCompletedWeeks = new Set();
-  const currentUnderLimitDays = new Set();
-  weeks.forEach(w => {
-    const ws = weekStats(w);
-    if (ws.daysLogged === 7 && ws.daysUnderLimit === 7) {
-      currentCompletedWeeks.add(w.n);
-    }
-    for (let d = 0; d < 7; d++) {
-      const key = `${w.n}-${d}`;
-      if (key in progress && progress[key] <= w.limit) {
-        currentUnderLimitDays.add(key);
-      }
-    }
+function addTask(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.tasks.push({ id: "t" + Date.now(), text: "New task", done: false, due: "" });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function updateTask(courseId, taskId, field, value) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var t = c.tasks.find(function (tt) { return tt.id === taskId; });
+  if (!t) return;
+  t[field] = value;
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function deleteTask(courseId, taskId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.tasks = c.tasks.filter(function (tt) { return tt.id !== taskId; });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function addPin(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (c.pins.length >= 3) { alert("Maximum 3 pins per course to keep refresh times fast."); return; }
+  c.pins.push({
+    id: "p" + Date.now(), label: "New pin", fileId: "",
+    type: "doc", mode: "firstParagraph", heading: "", cell: ""
   });
-
-  grid.innerHTML = '';
-  weeks.forEach(w => {
-    const isOpen = expandedWeek === w.n;
-    const stats = weekStats(w);
-    const weekEl = document.createElement('div');
-    const isCompleted = currentCompletedWeeks.has(w.n);
-    const justCompleted = isCompleted && !prevCompletedWeeks.has(w.n) && !firstRender;
-    const justOpened = isOpen && expandedWeek !== prevExpandedWeek && !firstRender;
-    weekEl.className = 'week-block' +
-      (isOpen ? ' open' : '') +
-      (isCompleted ? ' completed' : '') +
-      (justCompleted ? ' just-completed' : '') +
-      (justOpened ? ' just-opened' : '');
-
-    const header = document.createElement('button');
-    header.className = 'week-header';
-    header.innerHTML = `
-      <div class="week-number">${w.n}</div>
-      <div class="week-header-left">
-        <div class="week-pods">${w.perDay}${w.perDay !== 'None' ? ' a day' : ''}</div>
-        <div class="week-note">${w.note}</div>
-      </div>
-      <div class="week-header-right">
-        <div class="week-progress-pill">${stats.daysLogged}/7</div>
-        <div class="chevron">${isOpen ? '▾' : '▸'}</div>
-      </div>
-    `;
-    header.onclick = () => {
-      expandedWeek = isOpen ? null : w.n;
-      saveExpandedWeek();
-      render();
-    };
-    weekEl.appendChild(header);
-
-    if (isOpen) {
-      const daysWrap = document.createElement('div');
-      daysWrap.className = 'days-wrap';
-      const todayIdx = (new Date().getDay() + 6) % 7; // convert Sun=0..Sat=6 to Mon=0..Sun=6
-      for (let d = 0; d < 7; d++) {
-        const pods = getPods(w.n, d);
-        const logged = `${w.n}-${d}` in progress;
-        const underLimit = logged && pods <= w.limit;
-        const overLimit = logged && pods > w.limit;
-        const isToday = d === todayIdx && isOpen;
-        const dayKey = `${w.n}-${d}`;
-        const justEarnedCheck = underLimit && !prevUnderLimitDays.has(dayKey) && !firstRender;
-        const dayRow = document.createElement('div');
-        dayRow.className = 'day-row' +
-          (logged ? ' logged' : '') +
-          (underLimit ? ' under' : '') +
-          (overLimit ? ' over' : '') +
-          (isToday ? ' today' : '') +
-          (justEarnedCheck ? ' just-earned' : '');
-        dayRow.setAttribute('data-day', d);
-
-        // Decide if this row should pulse (just edited)
-        const justEdited = lastAction && lastAction.weekN === w.n && lastAction.dayIdx === d;
-        if (justEdited) dayRow.classList.add('pulse');
-
-        const indicatorContent = underLimit ? CHECK_SVG : (overLimit ? DOT_SVG : '');
-
-        dayRow.innerHTML = `
-          <div class="day-label">${isToday ? 'Today' : DAYS[d]}</div>
-          <div class="day-counter">
-            <button class="day-btn minus${justEdited && lastAction.type === 'minus' ? ' pop-teal' : ''}" data-action="minus" aria-label="Subtract half pod">−</button>
-            <div class="day-pods">${logged ? formatPods(pods) : '—'}</div>
-            <button class="day-btn plus${justEdited && lastAction.type === 'plus' ? ' pop' : ''}" data-action="plus" aria-label="Add half pod">+</button>
-          </div>
-          <div class="day-indicator">${indicatorContent}</div>
-        `;
-        dayRow.querySelector('[data-action="minus"]').onclick = () => setPods(w.n, d, Math.max(0, pods - 0.5), 'minus');
-        dayRow.querySelector('[data-action="plus"]').onclick = () => setPods(w.n, d, pods + 0.5, 'plus');
-        daysWrap.appendChild(dayRow);
-      }
-      const weekTotal = document.createElement('div');
-      weekTotal.className = 'week-total';
-      weekTotal.innerHTML = `
-        <span class="week-total-label">Week total</span>
-        <span class="week-total-value">
-          <span class="current">${formatPods(stats.logged)}</span><span class="separator">/</span><span class="target">${w.weekly} pods</span>
-        </span>
-      `;
-      daysWrap.appendChild(weekTotal);
-      weekEl.appendChild(daysWrap);
-    }
-
-    grid.appendChild(weekEl);
-  });
-
-  // Money saved + pods avoided + streak
-  const avoided = computeAvoided();
-  const streak = computeStreak();
-  // Money stays non-negative — no "you owe money" vibes
-  const saved = Math.max(0, avoided * POD_COST);
-
-  // Animate stat updates (or set instantly on first render)
-  if (firstRender) {
-    moneyEl.textContent = '$' + Math.round(saved).toLocaleString();
-    avoidedEl.textContent = formatPods(avoided);
-    streakEl.textContent = streak;
-  } else {
-    if (saved !== prevStats.saved) {
-      tweenNumber(moneyEl, prevStats.saved, saved, 800, (v) => '$' + Math.round(v).toLocaleString());
-    }
-    if (avoided !== prevStats.avoided) {
-      // For pods, tween to nearest half/quarter only at the end — round during animation
-      tweenNumber(avoidedEl, prevStats.avoided, avoided, 800, (v) => {
-        // Show integer during tween for smoothness, formatted at end
-        return Math.abs(v - avoided) < 0.05 ? formatPods(avoided) : (v < 0 ? '−' : '') + Math.abs(v).toFixed(1).replace(/\.0$/, '');
-      });
-    }
-    if (streak !== prevStats.streak) {
-      tweenNumber(streakEl, prevStats.streak, streak, 700, (v) => Math.round(v).toString());
-    }
-  }
-
-  // Toggle "active" state on stat cards when they have meaningful values
-  const streakCard = document.querySelector('.stat-streak');
-  streakCard.classList.toggle('active', streak >= 1);
-  document.querySelector('.stat-avoided').classList.toggle('active', avoided > 0);
-  document.querySelector('.stat-avoided').classList.toggle('over', avoided < 0);
-  document.querySelector('.stat-money').classList.toggle('active', saved > 0);
-
-  // Streak just incremented → fire one-shot celebration
-  if (!firstRender && streak > prevStats.streak) {
-    streakCard.classList.remove('just-incremented');
-    void streakCard.offsetWidth; // force reflow so animation replays
-    streakCard.classList.add('just-incremented');
-    setTimeout(() => streakCard.classList.remove('just-incremented'), 950);
-  }
-
-  prevStats = { streak, avoided, saved };
-  prevCompletedWeeks = currentCompletedWeeks;
-  prevUnderLimitDays = currentUnderLimitDays;
-  prevExpandedWeek = expandedWeek;
-  firstRender = false;
-
-  // Clear the lastAction so the pulse only plays once
-  lastAction = null;
+  saveCourseDebounced(courseId);
+  render();
 }
 
-function formatPods(n) {
-  // Handle negatives by formatting absolute value and prepending minus
-  const negative = n < 0;
-  const abs = Math.abs(n);
-  let result;
-  if (abs === 0) return '0';
-  if (abs === 0.25) result = '¼';
-  else if (abs === 0.5) result = '½';
-  else if (abs === 0.75) result = '¾';
-  else if (abs === 1) result = '1';
-  else if (Number.isInteger(abs)) result = String(abs);
-  else {
-    // handle 1.5, 2.5 etc
-    const whole = Math.floor(abs);
-    const frac = abs - whole;
-    const fracStr = frac === 0.25 ? '¼' : frac === 0.5 ? '½' : frac === 0.75 ? '¾' : '';
-    result = fracStr ? `${whole}${fracStr}` : abs.toFixed(2);
-  }
-  return negative ? '−' + result : result;
+function updatePin(courseId, pinId, field, value) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var p = c.pins.find(function (pp) { return pp.id === pinId; });
+  if (!p) return;
+  p[field] = value;
+  saveCourseDebounced(courseId);
+  render();
 }
 
-let resetPending = false;
-let resetPendingTimer = null;
+function deletePin(courseId, pinId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.pins = c.pins.filter(function (pp) { return pp.id !== pinId; });
+  saveCourseDebounced(courseId);
+  render();
+}
 
-async function resetProgress() {
-  const btn = document.querySelector('.reset-btn');
-  if (!resetPending) {
-    // First tap: arm the reset
-    resetPending = true;
-    btn.textContent = 'Tap again to confirm';
-    btn.classList.add('armed');
-    resetPendingTimer = setTimeout(() => {
-      resetPending = false;
-      btn.textContent = 'Reset progress';
-      btn.classList.remove('armed');
-    }, 3000);
+// ---------- Refresh ----------
+
+function refreshCourse(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (!c.driveFolderId && !c.canvasCourseId && c.pins.length === 0) {
+    alert("Add a Drive folder ID, Canvas course ID, or at least one pinned file first.");
     return;
   }
-  // Second tap within 3s: actually reset
-  clearTimeout(resetPendingTimer);
-  resetPending = false;
-  btn.textContent = 'Reset progress';
-  btn.classList.remove('armed');
 
-  progress = {};
-  expandedWeek = 1;
-  saveLocal();
+  state.refreshing[courseId] = true;
   render();
-  if (USING_SHEET) {
-    setStatus('Resetting...', 'syncing');
-    try {
-      await callSheet({ action: 'reset' });
-      setStatus('Reset', 'synced');
-      setTimeout(() => setStatus(''), 1500);
-    } catch (e) {
-      setStatus('Offline', 'error');
-    }
+
+  var calls = [];
+  var data = { canvas: null, drive: null, pins: [] };
+
+  if (c.canvasCourseId) {
+    calls.push(apiCall({ action: "refreshCanvas", canvasCourseId: c.canvasCourseId })
+      .then(function (r) { data.canvas = r.ok ? r.data : { ok: false, error: r.error }; }));
   }
+  if (c.driveFolderId) {
+    calls.push(apiCall({ action: "refreshDrive", driveFolderId: c.driveFolderId })
+      .then(function (r) { data.drive = r.ok ? r.data : { ok: false, error: r.error }; }));
+  }
+  if (c.pins.length > 0) {
+    calls.push(apiCall({ action: "refreshPins", pins: JSON.stringify(c.pins) })
+      .then(function (r) { data.pins = r.ok ? r.data : []; }));
+  }
+
+  Promise.all(calls).then(function () {
+    state.externalData[courseId] = data;
+    state.refreshing[courseId] = false;
+    var now = new Date();
+    state.lastRefresh[courseId] = now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
+    render();
+  }).catch(function (err) {
+    state.refreshing[courseId] = false;
+    alert("Refresh failed: " + err.message);
+    render();
+  });
 }
 
-render();
-loadFromSheet();
-</script>
+// ---------- Render ----------
 
+function esc(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, function (m) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+  });
+}
+
+function slug(s) { return String(s || "").replace(/\s+/g, "-"); }
+
+function svgIcon(path, cls) {
+  return '<svg class="' + (cls || "icon-sm") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+}
+var ICONS = {
+  chevronDown: '<polyline points="6 9 12 15 18 9"/>',
+  chevronRight: '<polyline points="9 18 15 12 9 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  circle: '<circle cx="12" cy="12" r="9"/>',
+  refresh: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  external: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  pin: '<path d="M12 17v5"/><path d="M9 10.76V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4.76c0 .63.28 1.22.76 1.62l2.5 2.12A2 2 0 0 1 19 16v0a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v0a2 2 0 0 1 .74-1.5l2.5-2.12A2 2 0 0 0 9 10.76z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  sheet: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+  alertCircle: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
+};
+
+function render() {
+  renderMetrics();
+  renderCourses();
+}
+
+function renderMetrics() {
+  var activeCount = state.courses.filter(function (c) { return c.stage !== "Archived" && c.stage !== "Live"; }).length;
+  var atRiskCount = state.courses.filter(function (c) { return c.status === "At risk" || c.status === "Blocked"; }).length;
+  var openTasks = state.courses.reduce(function (s, c) { return s + c.tasks.filter(function (t) { return !t.done; }).length; }, 0);
+  var avgProgress = state.courses.length ? Math.round(state.courses.reduce(function (s, c) { return s + (c.progress || 0); }, 0) / state.courses.length) : 0;
+
+  var metrics = [
+    { label: "Active courses", value: activeCount },
+    { label: "At risk / blocked", value: atRiskCount },
+    { label: "Open tasks", value: openTasks },
+    { label: "Avg progress", value: avgProgress + "%" }
+  ];
+  document.getElementById("metrics").innerHTML = metrics.map(function (m) {
+    return '<div class="metric"><div class="metric-label">' + esc(m.label) + '</div><div class="metric-value">' + esc(m.value) + '</div></div>';
+  }).join("");
+}
+
+function renderCourses() {
+  var html = state.courses.map(renderCourseCard).join("");
+  document.getElementById("courses").innerHTML = html;
+  wireCardEvents();
+}
+
+function renderCourseCard(c) {
+  var expanded = !!state.expanded[c.id];
+  var doneTasks = c.tasks.filter(function (t) { return t.done; }).length;
+  var tab = state.activeTab[c.id] || "canvas";
+
+  var pinsText = c.pins.length > 0 ? " · " + c.pins.length + " pinned" : "";
+  var faculty = c.faculty ? esc(c.faculty) + " · " : "";
+
+  var header = '' +
+    '<div class="card-header" data-action="toggle" data-course-id="' + c.id + '">' +
+      svgIcon(expanded ? ICONS.chevronDown : ICONS.chevronRight, "icon card-chevron") +
+      '<div class="card-titles">' +
+        '<div class="card-title-row">' +
+          '<span class="card-code">' + esc(c.code) + '</span>' +
+          '<span class="card-name">' + esc(c.title) + '</span>' +
+        '</div>' +
+        '<div class="card-meta">' + faculty + esc(c.platform) + ' · ' + doneTasks + '/' + c.tasks.length + ' tasks' + pinsText + '</div>' +
+      '</div>' +
+      '<span class="badge badge-stage-' + slug(c.stage) + '">' + esc(c.stage) + '</span>' +
+      '<span class="badge badge-status-' + slug(c.status) + '">' + esc(c.status) + '</span>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width: ' + (c.progress || 0) + '%"></div></div>' +
+      '<span class="progress-text">' + (c.progress || 0) + '%</span>' +
+    '</div>';
+
+  if (!expanded) return '<div class="card">' + header + '</div>';
+
+  var body = renderCardBody(c, tab);
+  return '<div class="card">' + header + body + '</div>';
+}
+
+function renderCardBody(c, tab) {
+  return '' +
+    '<div class="card-body">' +
+      renderExternalPanel(c, tab) +
+      renderFieldsGrid(c) +
+      renderSourceIds(c) +
+      renderNotes(c) +
+      renderTasks(c) +
+      '<div class="card-footer">' +
+        '<button class="btn btn-sm btn-danger" data-action="delete-course" data-course-id="' + c.id + '">' +
+          svgIcon(ICONS.trash) + ' Delete course</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderExternalPanel(c, tab) {
+  var refreshing = !!state.refreshing[c.id];
+  var lastRefresh = state.lastRefresh[c.id];
+
+  var tabButtons = ''  +
+    '<div class="tabs">' +
+      '<button class="tab ' + (tab === "canvas" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="canvas">' +
+        svgIcon(ICONS.book) + ' Canvas</button>' +
+      '<button class="tab ' + (tab === "folder" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="folder">' +
+        svgIcon(ICONS.folder) + ' Folder activity</button>' +
+      '<button class="tab ' + (tab === "pinned" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="pinned">' +
+        svgIcon(ICONS.pin) + ' Pinned' + (c.pins.length > 0 ? ' (' + c.pins.length + ')' : '') + '</button>' +
+    '</div>';
+
+  var content = '';
+  if (tab === "canvas")  content = renderCanvasTab(c);
+  if (tab === "folder")  content = renderFolderTab(c);
+  if (tab === "pinned")  content = renderPinnedTab(c);
+
+  return '' +
+    '<div style="margin-bottom: 14px;">' +
+      '<div class="panel-header" style="margin-bottom: 10px;">' +
+        '<div class="panel-title">External data</div>' +
+        '<div class="panel-actions">' +
+          (lastRefresh ? '<span style="font-size: 11px; color: var(--text-faint);">Last refresh ' + esc(lastRefresh) + '</span>' : '') +
+          '<button class="btn btn-sm" data-action="refresh" data-course-id="' + c.id + '" ' + (refreshing ? 'disabled' : '') + '>' +
+            '<span class="' + (refreshing ? 'spin' : '') + '">' + svgIcon(ICONS.refresh) + '</span>' +
+            ' ' + (refreshing ? 'Refreshing' : 'Refresh') + '</button>' +
+        '</div>' +
+      '</div>' +
+      tabButtons +
+      '<div class="tab-content">' + content + '</div>' +
+    '</div>';
+}
+
+function renderCanvasTab(c) {
+  var data = state.externalData[c.id] && state.externalData[c.id].canvas;
+  if (!data) return '<div class="empty">' + (c.canvasCourseId ? 'Click Refresh to pull latest from Canvas.' : 'Add a Canvas course ID below, then Refresh.') + '</div>';
+  if (!data.ok) return '<div class="empty" style="color: var(--red);">Canvas error: ' + esc(data.error) + '</div>';
+  var publishColor = data.coursePublished ? 'var(--green)' : 'var(--amber)';
+  return '' +
+    '<div class="canvas-summary">' +
+      '<div><span class="label">Modules:</span> <strong>' + data.publishedModules + '/' + data.totalModules + '</strong> published</div>' +
+      '<div><span class="label">Status:</span> <span style="color: ' + publishColor + '; font-weight: 500;">' + (data.coursePublished ? 'published' : 'unpublished') + '</span></div>' +
+      '<div><span class="label">Last activity:</span> ' + esc(data.lastActivity) + '</div>' +
+    '</div>' +
+    '<a class="inline-link" href="' + esc(data.courseUrl) + '" target="_blank" rel="noopener">Open in Canvas ' + svgIcon(ICONS.external) + '</a>';
+}
+
+function renderFolderTab(c) {
+  var data = state.externalData[c.id] && state.externalData[c.id].drive;
+  if (!data) return '<div class="empty">' + (c.driveFolderId ? 'Click Refresh to pull folder activity.' : 'Add a Drive folder ID below, then Refresh.') + '</div>';
+  if (!data.ok) return '<div class="empty" style="color: var(--red);">Drive error: ' + esc(data.error) + '</div>';
+  var filesHtml = data.recentFiles.map(function (f) {
+    return '<div class="file-row">' + svgIcon(ICONS.file) +
+      '<span class="file-row-name">' + esc(f.name) + '</span>' +
+      '<span class="file-row-by">' + esc(f.by) + '</span>' +
+      '<span class="file-row-when">' + esc(f.modified) + '</span></div>';
+  }).join("");
+  return '' +
+    '<div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">' + data.fileCount + ' files total · 5 most recent:</div>' +
+    '<div style="display: flex; flex-direction: column; gap: 4px;">' + filesHtml + '</div>' +
+    '<a class="inline-link" href="' + esc(data.folderUrl) + '" target="_blank" rel="noopener">Open folder ' + svgIcon(ICONS.external) + '</a>';
+}
+
+function renderPinnedTab(c) {
+  var configuring = !!state.configuring[c.id];
+  var header = '' +
+    '<div class="section-header">' +
+      '<div style="font-size: 12px; color: var(--text-muted);">' + c.pins.length + ' of 3 pins</div>' +
+      '<button class="btn btn-xs" data-action="toggle-config" data-course-id="' + c.id + '">' +
+        svgIcon(ICONS.settings) + ' ' + (configuring ? 'Done' : 'Configure pins') + '</button>' +
+    '</div>';
+
+  var configEditor = configuring ? renderPinConfig(c) : '';
+
+  var results = '';
+  if (c.pins.length === 0 && !configuring) {
+    results = '<div class="empty">No pinned files. Click Configure pins to add up to 3.</div>';
+  } else {
+    var pinData = state.externalData[c.id] && state.externalData[c.id].pins;
+    if (pinData && pinData.length > 0) {
+      results = pinData.map(renderPinResult).join("");
+    } else if (!configuring) {
+      results = '<div class="empty">Click Refresh to pull latest from pinned files.</div>';
+    }
+  }
+
+  return header + configEditor + results;
+}
+
+function renderPinConfig(c) {
+  if (c.pins.length === 0) {
+    return '<div class="pin-config">' +
+      '<div class="empty" style="padding: 4px 0;">No pins yet. Add one below.</div>' +
+      '<button class="btn btn-sm" data-action="add-pin" data-course-id="' + c.id + '">' + svgIcon(ICONS.plus) + ' Add pin</button>' +
+    '</div>';
+  }
+
+  var rows = c.pins.map(function (p) {
+    var modeOrCell = '';
+    if (p.type === "doc") {
+      modeOrCell = '<select data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="mode">' +
+        '<option value="heading"' + (p.mode === "heading" ? " selected" : "") + '>Specific heading</option>' +
+        '<option value="firstParagraph"' + (p.mode === "firstParagraph" ? " selected" : "") + '>First paragraph</option>' +
+        '<option value="headings"' + (p.mode === "headings" ? " selected" : "") + '>Headings list</option>' +
+      '</select>';
+    } else {
+      var ph = p.type === "sheet-cell" ? "B2" : "A2:C10";
+      modeOrCell = '<input class="mono" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="cell" value="' + esc(p.cell || "") + '" placeholder="' + ph + '" />';
+    }
+
+    var headingInput = (p.type === "doc" && p.mode === "heading") ?
+      '<input class="pin-heading-input" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="heading" value="' + esc(p.heading || "") + '" placeholder="Heading to pull (e.g. Learning Objectives)" />' : '';
+
+    return '<div class="pin-config-row">' +
+      '<input type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="label" value="' + esc(p.label || "") + '" placeholder="Label" />' +
+      '<input class="mono" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="fileId" value="' + esc(p.fileId || "") + '" placeholder="File ID" />' +
+      '<select data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="type">' +
+        '<option value="doc"' + (p.type === "doc" ? " selected" : "") + '>Doc</option>' +
+        '<option value="sheet-cell"' + (p.type === "sheet-cell" ? " selected" : "") + '>Sheet cell</option>' +
+        '<option value="sheet-range"' + (p.type === "sheet-range" ? " selected" : "") + '>Sheet range</option>' +
+      '</select>' +
+      modeOrCell +
+      '<button class="icon-btn" data-action="delete-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+      headingInput +
+    '</div>';
+  }).join("");
+
+  var addBtn = '<button class="btn btn-sm" data-action="add-pin" data-course-id="' + c.id + '"' + (c.pins.length >= 3 ? " disabled" : "") + '>' + svgIcon(ICONS.plus) + ' Add pin</button>';
+
+  return '<div class="pin-config">' + rows + '<div style="margin-top: 8px;">' + addBtn + '</div></div>';
+}
+
+function renderPinResult(p) {
+  var r = p.result;
+  var iconPath = p.type === "doc" ? ICONS.file : ICONS.sheet;
+  var modeText;
+  if (p.type === "doc") {
+    if (p.mode === "heading") modeText = "heading: " + (p.heading || "—");
+    else if (p.mode === "headings") modeText = "headings list";
+    else modeText = "first paragraph";
+  } else if (p.type === "sheet-cell") {
+    modeText = "cell " + (p.cell || "—");
+  } else {
+    modeText = "range " + (p.cell || "—");
+  }
+
+  var body = '';
+  if (r && r.ok) {
+    if (r.content) body += '<div class="quote">"' + esc(r.content) + '"</div>';
+    if (r.headings) {
+      body += '<ul style="margin: 4px 0; padding-left: 18px; color: var(--gray);">' +
+        r.headings.map(function (h) { return '<li style="font-size: 12px;">' + esc(h) + '</li>'; }).join("") + '</ul>';
+    }
+    if (r.value !== undefined && r.value !== null) body += '<div class="value">' + esc(r.value) + '</div>';
+    if (r.table) {
+      body += '<table class="pin-table">' + r.table.map(function (row) {
+        return '<tr>' + row.map(function (cell) { return '<td>' + esc(cell) + '</td>'; }).join("") + '</tr>';
+      }).join("") + '</table>';
+    }
+    body += '<div class="pin-meta">Modified ' + esc(r.modified) + (r.by ? ' by ' + esc(r.by) : '') + '</div>';
+  } else if (r && !r.ok) {
+    body = '<div class="pin-error">Error: ' + esc(r.error || "could not fetch") + '</div>';
+  } else {
+    body = '<div class="empty">Not refreshed yet.</div>';
+  }
+
+  var link = (r && r.url) ? '<a class="inline-link" style="margin: 0; font-size: 11px;" href="' + esc(r.url) + '" target="_blank" rel="noopener">Open ' + svgIcon(ICONS.external) + '</a>' : '';
+
+  return '<div class="pin">' +
+    '<div class="pin-header">' +
+      '<div class="pin-label">' + svgIcon(iconPath) + ' ' + esc(p.label) + ' <span class="pin-mode">' + esc(modeText) + '</span></div>' +
+      link +
+    '</div>' +
+    '<div class="pin-body">' + body + '</div>' +
+  '</div>';
+}
+
+function renderFieldsGrid(c) {
+  return '<div class="fields-grid">' +
+    labelInput(c.id, "code", "Code", c.code) +
+    labelInput(c.id, "title", "Title", c.title) +
+    labelInput(c.id, "faculty", "Faculty", c.faculty) +
+    labelSelect(c.id, "stage", "Stage", c.stage, STAGES) +
+    labelSelect(c.id, "status", "Status", c.status, STATUSES) +
+    labelInput(c.id, "platform", "Platform", c.platform) +
+    labelInput(c.id, "startDate", "Start date", c.startDate, "YYYY-MM-DD") +
+    labelInput(c.id, "targetLaunch", "Target launch", c.targetLaunch, "YYYY-MM-DD") +
+    '<div><div class="field-label">Progress: ' + (c.progress || 0) + '%</div>' +
+      '<input type="range" min="0" max="100" step="1" value="' + (c.progress || 0) + '" data-action="update-field" data-course-id="' + c.id + '" data-field="progress" data-type="number" /></div>' +
+  '</div>';
+}
+
+function renderSourceIds(c) {
+  return '<div class="fields-grid-2">' +
+    labelInput(c.id, "driveFolderId", "Drive folder ID", c.driveFolderId, "from folder URL") +
+    labelInput(c.id, "canvasCourseId", "Canvas course ID", c.canvasCourseId, "number only") +
+  '</div>';
+}
+
+function renderNotes(c) {
+  return '<div style="margin-bottom: 14px;">' +
+    '<div class="field-label">Notes</div>' +
+    '<textarea class="field-textarea" rows="2" data-action="update-field" data-course-id="' + c.id + '" data-field="notes">' + esc(c.notes) + '</textarea>' +
+  '</div>';
+}
+
+function renderTasks(c) {
+  var head = '<div class="section-header">' +
+    '<div class="section-title">Tasks</div>' +
+    '<button class="btn btn-xs" data-action="add-task" data-course-id="' + c.id + '">' + svgIcon(ICONS.plus) + ' Add task</button>' +
+  '</div>';
+
+  if (c.tasks.length === 0) {
+    return '<div style="margin-bottom: 10px;">' + head + '<div class="empty" style="padding: 6px 0;">No tasks yet.</div></div>';
+  }
+
+  var tasks = c.tasks.map(function (t) {
+    var checkCls = t.done ? "task-check done" : "task-check";
+    var textCls = t.done ? "task-text done" : "task-text";
+    var icon = t.done ? ICONS.check : ICONS.circle;
+    return '<div class="task">' +
+      '<button class="' + checkCls + '" data-action="toggle-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '">' + svgIcon(icon, "icon") + '</button>' +
+      '<input class="' + textCls + '" type="text" value="' + esc(t.text) + '" data-action="update-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '" data-field="text" />' +
+      '<input class="task-due" type="text" value="' + esc(t.due) + '" placeholder="YYYY-MM-DD" data-action="update-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '" data-field="due" />' +
+      '<button class="task-delete" data-action="delete-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+    '</div>';
+  }).join("");
+
+  return '<div style="margin-bottom: 10px;">' + head + '<div class="tasks">' + tasks + '</div></div>';
+}
+
+function labelInput(courseId, field, label, value, placeholder) {
+  return '<div><div class="field-label">' + esc(label) + '</div>' +
+    '<input class="field-input" type="text" value="' + esc(value) + '" placeholder="' + esc(placeholder || "") + '" data-action="update-field" data-course-id="' + courseId + '" data-field="' + field + '" /></div>';
+}
+
+function labelSelect(courseId, field, label, value, options) {
+  var opts = options.map(function (o) {
+    return '<option value="' + esc(o) + '"' + (o === value ? " selected" : "") + '>' + esc(o) + '</option>';
+  }).join("");
+  return '<div><div class="field-label">' + esc(label) + '</div>' +
+    '<select class="field-select" data-action="update-field" data-course-id="' + courseId + '" data-field="' + field + '">' + opts + '</select></div>';
+}
+
+// ---------- Event wiring ----------
+
+function wireCardEvents() {
+  // Header toggle (collapse/expand) — use click on whole header
+  document.querySelectorAll('[data-action="toggle"]').forEach(function (el) {
+    el.addEventListener("click", function () {
+      var id = el.dataset.courseId;
+      state.expanded[id] = !state.expanded[id];
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="set-tab"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      state.activeTab[el.dataset.courseId] = el.dataset.tab;
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="refresh"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); refreshCourse(el.dataset.courseId); });
+  });
+
+  document.querySelectorAll('[data-action="toggle-config"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      state.configuring[el.dataset.courseId] = !state.configuring[el.dataset.courseId];
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="update-field"]').forEach(function (el) {
+    var evt = (el.tagName === "SELECT") ? "change" : "input";
+    el.addEventListener(evt, function (e) {
+      e.stopPropagation();
+      var value = el.value;
+      if (el.dataset.type === "number") value = parseInt(value, 10) || 0;
+      updateField(el.dataset.courseId, el.dataset.field, value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.querySelectorAll('[data-action="update-task"]').forEach(function (el) {
+    el.addEventListener("input", function (e) {
+      e.stopPropagation();
+      updateTask(el.dataset.courseId, el.dataset.taskId, el.dataset.field, el.value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.querySelectorAll('[data-action="toggle-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var c = state.courses.find(function (cc) { return cc.id === el.dataset.courseId; });
+      if (!c) return;
+      var t = c.tasks.find(function (tt) { return tt.id === el.dataset.taskId; });
+      if (!t) return;
+      updateTask(el.dataset.courseId, el.dataset.taskId, "done", !t.done);
+    });
+  });
+
+  document.querySelectorAll('[data-action="add-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); addTask(el.dataset.courseId); });
+  });
+
+  document.querySelectorAll('[data-action="delete-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deleteTask(el.dataset.courseId, el.dataset.taskId); });
+  });
+
+  document.querySelectorAll('[data-action="update-pin"]').forEach(function (el) {
+    var evt = (el.tagName === "SELECT") ? "change" : "input";
+    el.addEventListener(evt, function (e) {
+      e.stopPropagation();
+      updatePin(el.dataset.courseId, el.dataset.pinId, el.dataset.field, el.value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.querySelectorAll('[data-action="add-pin"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); addPin(el.dataset.courseId); });
+  });
+
+  document.querySelectorAll('[data-action="delete-pin"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deletePin(el.dataset.courseId, el.dataset.pinId); });
+  });
+
+  document.querySelectorAll('[data-action="delete-course"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deleteCourse(el.dataset.courseId); });
+  });
+}
+
+// ---------- Boot ----------
+
+document.getElementById("add-course-btn").addEventListener("click", addCourse);
+
+if (APPS_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbx8nPigWR5nLl8B0I0_2tWlEE13ufeQRyyz2c6veLHL95IY4jo4653lv6O6jilQzGoQ/exec") {
+  document.getElementById("courses").innerHTML =
+    '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">' +
+      '<p style="font-size: 15px; font-weight: 500; color: var(--text);">Setup needed</p>' +
+      '<p>Paste your Apps Script deployment URL into the <code>APPS_SCRIPT_URL</code> constant near the top of this file.</p>' +
+      '<p style="font-size: 12px;">See SETUP.md for the full setup guide.</p>' +
+    '</div>';
+  setSaveStatus("error", "Not configured");
+} else {
+  loadCourses();
+}
+</script>
 </body>
 </html>
