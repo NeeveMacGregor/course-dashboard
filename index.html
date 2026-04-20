@@ -572,7 +572,7 @@ function addPin(courseId) {
   if (c.pins.length >= 3) { alert("Maximum 3 pins per course to keep refresh times fast."); return; }
   c.pins.push({
     id: "p" + Date.now(), label: "New pin", fileId: "",
-    type: "doc", mode: "firstParagraph", heading: "", cell: ""
+    type: "doc", mode: "firstParagraph", heading: "", cell: "", tab: ""
   });
   saveCourseDebounced(courseId);
   render();
@@ -863,6 +863,9 @@ function renderPinConfig(c) {
     var headingInput = (p.type === "doc" && p.mode === "heading") ?
       '<input class="pin-heading-input" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="heading" value="' + esc(p.heading || "") + '" placeholder="Heading to pull (e.g. Learning Objectives)" />' : '';
 
+    var tabInput = (p.type === "doc") ?
+      '<input class="pin-heading-input" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="tab" value="' + esc(p.tab || "") + '" placeholder="Tab name (leave blank for first tab or single-tab docs)" />' : '';
+
     return '<div class="pin-config-row">' +
       '<input type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="label" value="' + esc(p.label || "") + '" placeholder="Label" />' +
       '<input class="mono" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="fileId" value="' + esc(p.fileId || "") + '" placeholder="File ID" />' +
@@ -873,6 +876,7 @@ function renderPinConfig(c) {
       '</select>' +
       modeOrCell +
       '<button class="icon-btn" data-action="delete-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+      tabInput +
       headingInput +
     '</div>';
   }).join("");
@@ -890,6 +894,7 @@ function renderPinResult(p) {
     if (p.mode === "heading") modeText = "heading: " + (p.heading || "—");
     else if (p.mode === "headings") modeText = "headings list";
     else modeText = "first paragraph";
+    if (p.tab) modeText = "tab: " + p.tab + " · " + modeText;
   } else if (p.type === "sheet-cell") {
     modeText = "cell " + (p.cell || "—");
   } else {
@@ -1090,7 +1095,7 @@ function wireCardEvents() {
 
 document.getElementById("add-course-btn").addEventListener("click", addCourse);
 
-if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("script.google.com") === -1) {
+if (APPS_SCRIPT_URL === "PASTE_YOUR_APPS_SCRIPT_URL_HERE") {
   document.getElementById("courses").innerHTML =
     '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">' +
       '<p style="font-size: 15px; font-weight: 500; color: var(--text);">Setup needed</p>' +
