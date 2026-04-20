@@ -429,7 +429,81 @@ function updateField(courseId, field, value) {
   if (!c) return;
   c[field] = value;
   saveCourseDebounced(courseId);
-  render();
+  // Don't re-render the whole card on every keystroke — it destroys the input focus.
+  // Instead, surgically update the parts that display this field elsewhere.
+  updateHeaderAndMetrics(courseId, field);
+}
+
+// Surgically update the card header and summary metrics without touching inputs.
+// Called from field mutations that also need to reflect changes in the header or metrics.
+function updateHeaderAndMetrics(courseId, field) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+
+  // Header mirrors these fields; update them in place if they changed.
+  var card = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (card) {
+    if (field === "code")    { var el = card.querySelector(".card-code"); if (el) el.textContent = c.code; }
+    if (field === "title")   { var el = card.querySelector(".card-name"); if (el) el.textContent = c.title; }
+    if (field === "stage" || field === "status" || field === "faculty" || field === "platform") {
+      // These touch the badge classes or the meta line — easiest to re-render just this card header.
+      rerenderCardHeader(courseId);
+    }
+    if (field === "progress") {
+      var fill = card.querySelector(".progress-fill");
+      var txt = card.querySelector(".progress-text");
+      if (fill) fill.style.width = (c.progress || 0) + "%";
+      if (txt) txt.textContent = (c.progress || 0) + "%";
+      // Also update the label inside the expanded card (if open)
+      var label = document.querySelector('.card-body [data-action="update-field"][data-course-id="' + courseId + '"][data-field="progress"]');
+      if (label && label.previousElementSibling) {
+        label.previousElementSibling.textContent = "Progress: " + (c.progress || 0) + "%";
+      }
+    }
+  }
+
+  // Summary metrics depend on stage, status, progress, tasks.
+  if (field === "stage" || field === "status" || field === "progress") {
+    renderMetrics();
+  }
+}
+
+// Re-render just the header of one card (not the body — that keeps inputs alive).
+function rerenderCardHeader(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var oldHeader = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (!oldHeader) return;
+  var expanded = !!state.expanded[c.id];
+  var doneTasks = c.tasks.filter(function (t) { return t.done; }).length;
+  var pinsText = c.pins.length > 0 ? " · " + c.pins.length + " pinned" : "";
+  var faculty = c.faculty ? esc(c.faculty) + " · " : "";
+
+  var headerHTML = '' +
+    '<div class="card-header" data-action="toggle" data-course-id="' + c.id + '">' +
+      svgIcon(expanded ? ICONS.chevronDown : ICONS.chevronRight, "icon card-chevron") +
+      '<div class="card-titles">' +
+        '<div class="card-title-row">' +
+          '<span class="card-code">' + esc(c.code) + '</span>' +
+          '<span class="card-name">' + esc(c.title) + '</span>' +
+        '</div>' +
+        '<div class="card-meta">' + faculty + esc(c.platform) + ' · ' + doneTasks + '/' + c.tasks.length + ' tasks' + pinsText + '</div>' +
+      '</div>' +
+      '<span class="badge badge-stage-' + slug(c.stage) + '">' + esc(c.stage) + '</span>' +
+      '<span class="badge badge-status-' + slug(c.status) + '">' + esc(c.status) + '</span>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width: ' + (c.progress || 0) + '%"></div></div>' +
+      '<span class="progress-text">' + (c.progress || 0) + '%</span>' +
+    '</div>';
+
+  oldHeader.outerHTML = headerHTML;
+  // Re-wire just the toggle click on the new header
+  var newHeader = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (newHeader) {
+    newHeader.addEventListener("click", function () {
+      state.expanded[courseId] = !state.expanded[courseId];
+      render();
+    });
+  }
 }
 
 function addCourse() {
@@ -474,7 +548,14 @@ function updateTask(courseId, taskId, field, value) {
   if (!t) return;
   t[field] = value;
   saveCourseDebounced(courseId);
-  render();
+  // Checking a task off changes visual state (strikethrough, header count) — re-render.
+  // Typing in the text or due date should NOT re-render (kills focus).
+  if (field === "done") {
+    render();
+  } else {
+    // Update the header counts in case "done" changed elsewhere, but only affect the header.
+    rerenderCardHeader(courseId);
+  }
 }
 
 function deleteTask(courseId, taskId) {
@@ -504,7 +585,11 @@ function updatePin(courseId, pinId, field, value) {
   if (!p) return;
   p[field] = value;
   saveCourseDebounced(courseId);
-  render();
+  // Changing "type" or "mode" alters the form layout (shows/hides fields), so re-render.
+  // Typing in label/fileId/heading/cell should NOT re-render (kills focus).
+  if (field === "type" || field === "mode") {
+    render();
+  }
 }
 
 function deletePin(courseId, pinId) {
