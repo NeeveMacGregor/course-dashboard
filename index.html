@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#FAFAF7" />
+<title>Course Dashboard</title>
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --surface: #FFFFFF;
+    --surface-alt: #F7F6F2;
+    --border: rgba(0,0,0,0.15);
+    --border-soft: rgba(0,0,0,0.1);
+    --text: #2C2C2A;
+    --text-muted: #5F5E5A;
+    --text-faint: #888780;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --green: #085041;
+    --green-bg: #E1F5EE;
+    --amber: #633806;
+    --amber-bg: #FAEEDA;
+    --red: #791F1F;
+    --red-bg: #FCEBEB;
+    --purple: #3C3489;
+    --purple-bg: #EEEDFE;
+    --gray: #444441;
+    --gray-bg: #F1EFE8;
+    --accent: #378ADD;
+  }
+
+  body.dark {
+    --bg: #1A1A1A;
+    --surface: #242421;
+    --surface-alt: #2E2E2B;
+    --border: rgba(255,255,255,0.15);
+    --border-soft: rgba(255,255,255,0.08);
+    --text: #E8E6DE;
+    --text-muted: #A8A69E;
+    --text-faint: #77766F;
+    --blue: #7AB3E8;
+    --blue-bg: #1E3348;
+    --green: #7DD4B0;
+    --green-bg: #1C3A30;
+    --amber: #E8BD7A;
+    --amber-bg: #4A3820;
+    --red: #E88888;
+    --red-bg: #4A2525;
+    --purple: #B5AEE8;
+    --purple-bg: #2E2A4A;
+    --gray: #C8C6BE;
+    --gray-bg: #3A3A37;
+    --accent: #5FA3E8;
+  }
+
+  body.dark {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 1.5rem 1rem;
+    line-height: 1.5;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; }
+
+  .app-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+  }
+  .app-header h1 { font-size: 22px; font-weight: 500; margin: 0; }
+  .app-header p { font-size: 13px; color: var(--text-muted); margin: 4px 0 0; }
+
+  .save-status {
+    font-size: 12px; color: var(--text-faint);
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 6px; background: var(--surface-alt);
+    min-width: 80px; justify-content: center;
+  }
+  .save-status.saving { color: var(--amber); }
+  .save-status.saved { color: var(--green); }
+  .save-status.error { color: var(--red); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; color: var(--text);
+    border: 0.5px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--surface-alt); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; font-weight: 400; }
+  .btn-xs { padding: 3px 8px; font-size: 11px; font-weight: 400; }
+  .btn-danger { color: var(--red); border: none; }
+  .btn-danger:hover { background: var(--red-bg); }
+  .btn-icon {
+    padding: 6px 8px; background: transparent; border: 0.5px solid var(--border);
+    border-radius: 6px; cursor: pointer; color: var(--text); display: inline-flex;
+    align-items: center; justify-content: center; font-family: inherit;
+  }
+  .btn-icon:hover { background: var(--surface-alt); }
+
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 1.5rem;
+  }
+  .metric { background: var(--surface-alt); border-radius: 8px; padding: 14px 16px; }
+  .metric-label { font-size: 13px; color: var(--text-muted); }
+  .metric-value { font-size: 24px; font-weight: 500; margin-top: 2px; color: var(--text); }
+
+  .courses { display: flex; flex-direction: column; gap: 10px; }
+
+  .card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; cursor: pointer;
+  }
+  .card-chevron { color: var(--text-muted); flex-shrink: 0; }
+  .card-titles { flex: 1; min-width: 0; }
+  .card-title-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .card-code { font-weight: 500; font-size: 15px; color: var(--text); }
+  .card-name { font-size: 14px; color: var(--gray); }
+  .card-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .badge {
+    font-size: 12px; font-weight: 500; padding: 3px 10px;
+    border-radius: 8px; display: inline-flex; align-items: center; gap: 4px;
+    white-space: nowrap;
+  }
+  .badge-stage-Planning   { background: var(--gray-bg);   color: var(--gray); }
+  .badge-stage-Build      { background: var(--blue-bg);   color: var(--blue); }
+  .badge-stage-Review     { background: var(--purple-bg); color: var(--purple); }
+  .badge-stage-Pre-launch { background: var(--amber-bg);  color: var(--amber); }
+  .badge-stage-Live       { background: var(--green-bg);  color: var(--green); }
+  .badge-stage-Archived   { background: var(--gray-bg);   color: var(--text-muted); }
+
+  .badge-status-On-track { background: var(--green-bg); color: var(--green); }
+  .badge-status-At-risk  { background: var(--amber-bg); color: var(--amber); }
+  .badge-status-Blocked  { background: var(--red-bg);   color: var(--red); }
+  .badge-status-Done     { background: var(--purple-bg);color: var(--purple); }
+
+  .progress-bar {
+    width: 110px; height: 6px; background: var(--gray-bg);
+    border-radius: 4px; overflow: hidden; flex-shrink: 0;
+  }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.2s; }
+  .progress-text { font-size: 12px; color: var(--text-muted); min-width: 30px; text-align: right; }
+
+  .card-body {
+    border-top: 0.5px solid var(--border);
+    padding: 16px 16px 18px; background: var(--bg);
+  }
+
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .panel-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .panel-actions { display: flex; align-items: center; gap: 10px; }
+
+  .tabs { display: flex; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+  .tab {
+    background: transparent; border: 0.5px solid transparent;
+    border-bottom: 0.5px solid var(--border); border-radius: 8px 8px 0 0;
+    padding: 7px 14px; font-size: 13px; color: var(--text-muted);
+    cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-bottom: -1px;
+  }
+  .tab.active {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--surface);
+    font-weight: 500; color: var(--text);
+  }
+  .tab-overdue {
+    background: var(--red); color: #FFFFFF;
+    font-size: 10px; font-weight: 500;
+    padding: 1px 6px; border-radius: 8px; margin-left: 4px;
+    min-width: 14px; text-align: center;
+  }
+  body.dark .tab-overdue { color: #1A1A1A; }
+
+  .header-chip {
+    font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .header-chip.overdue { background: var(--red-bg); color: var(--red); }
+  .header-chip.tasks   { background: var(--gray-bg); color: var(--text-muted); }
+
+  .task.overdue { border-color: rgba(180, 50, 50, 0.25); background: var(--red-bg); }
+  .task.overdue .task-due { color: var(--red); font-weight: 500; }
+  .tab-content {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-top: none; border-radius: 0 0 10px 10px; padding: 14px;
+  }
+
+  .empty { font-size: 12px; color: var(--text-faint); font-style: italic; }
+
+  .canvas-summary {
+    font-size: 13px; color: var(--text);
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .canvas-summary strong { font-weight: 500; }
+  .canvas-summary .label { color: var(--text-muted); }
+
+  .module-list { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
+  .module-row {
+    display: flex; align-items: center; gap: 10px; padding: 6px 10px;
+    background: var(--surface-alt); border-radius: 6px; font-size: 12px;
+  }
+  .module-row-name { flex: 1; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .module-row a { color: var(--text); text-decoration: none; }
+  .module-row a:hover { text-decoration: underline; }
+  .module-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .module-dot.published { background: var(--green); }
+  .module-dot.unpublished { background: var(--amber); }
+  .module-row-state { color: var(--text-muted); font-size: 11px; min-width: 78px; text-align: right; }
+
+  .pin {
+    background: var(--surface-alt); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 10px;
+  }
+  .pin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px; gap: 8px; flex-wrap: wrap;
+  }
+  .pin-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--gray);
+  }
+  .pin-mode {
+    font-size: 10px; color: var(--text-faint); font-weight: 400;
+    background: var(--surface); padding: 1px 6px; border-radius: 3px;
+  }
+  .pin-body { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .pin-body .quote { font-style: italic; color: var(--gray); }
+  .pin-body .value { font-size: 15px; font-weight: 500; color: var(--text); }
+  .pin-error-box {
+    background: var(--red-bg); border-radius: 6px; padding: 8px 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .pin-error-msg { font-size: 12px; color: var(--red); flex: 1; min-width: 200px; }
+  .pin-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
+  .pin-table td { padding: 3px 6px; border: 0.5px solid var(--border-soft); color: var(--text); }
+
+  .pin-config {
+    background: var(--surface-alt); border: 0.5px solid var(--border-soft);
+    border-radius: 8px; padding: 10px; margin-bottom: 12px;
+  }
+  .pin-config-row {
+    background: var(--surface); border: 0.5px solid var(--border-soft);
+    border-radius: 6px; padding: 8px;
+    display: grid; grid-template-columns: 1.2fr 1.5fr 0.9fr 1.3fr auto;
+    gap: 6px; align-items: center; margin-bottom: 8px;
+  }
+  .pin-config-row.highlighted {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .pin-config-row:last-child { margin-bottom: 0; }
+  .pin-config-row input,
+  .pin-config-row select {
+    padding: 5px 8px; border: 0.5px solid var(--border);
+    border-radius: 4px; font-size: 12px; font-family: inherit;
+    background: var(--surface); color: var(--text); width: 100%;
+  }
+  .pin-config-row .pin-heading-input,
+  .pin-config-row .pin-tab-input {
+    grid-column: 1 / -1;
+  }
+  .pin-config-row .mono { font-family: ui-monospace, "SF Mono", monospace; }
+  .pin-config-row .icon-btn {
+    background: transparent; border: none; padding: 4px; cursor: pointer;
+    color: var(--text-faint); display: flex;
+  }
+
+  .fields-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 14px;
+  }
+  .fields-grid-2 {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px; margin-bottom: 14px;
+  }
+  .field-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .field-input, .field-select, .field-textarea {
+    width: 100%; padding: 7px 10px; border: 0.5px solid var(--border);
+    border-radius: 8px; font-size: 13px; font-family: inherit;
+    background: var(--surface); color: var(--text);
+  }
+  .field-textarea { resize: vertical; min-height: 52px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+  .tasks, .modules-tracker { display: flex; flex-direction: column; gap: 4px; }
+  .task, .module-tracker-row {
+    display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+    background: var(--surface); border: 0.5px solid var(--border-soft);
+    border-radius: 6px;
+  }
+  .task-check {
+    background: transparent; border: none; padding: 0; cursor: pointer;
+    display: flex; color: var(--text-faint);
+  }
+  .task-check.done { color: var(--green); }
+  .task-text {
+    flex: 1; border: none; background: transparent; font-size: 13px;
+    padding: 2px 0; outline: none; font-family: inherit; color: var(--text);
+  }
+  .task-text.done { text-decoration: line-through; color: var(--text-faint); }
+  .task-due, .module-note {
+    border: 0.5px solid var(--border-soft);
+    border-radius: 4px; padding: 3px 6px; font-size: 12px;
+    color: var(--text-muted); font-family: inherit;
+    background: var(--surface);
+  }
+  .task-due { width: 110px; }
+  .module-note { flex: 1; min-width: 0; }
+  .task-delete, .module-delete {
+    background: transparent; border: none; padding: 4px; cursor: pointer;
+    color: var(--text-faint); display: flex;
+  }
+
+  .module-name-input {
+    flex: 0 0 120px; border: 0.5px solid var(--border-soft);
+    border-radius: 4px; padding: 3px 6px; font-size: 12px;
+    color: var(--text); font-family: inherit; background: var(--surface);
+    font-weight: 500;
+  }
+  .module-status-select {
+    flex: 0 0 110px; border: 0.5px solid var(--border-soft);
+    border-radius: 4px; padding: 3px 6px; font-size: 11px;
+    color: var(--text); font-family: inherit; background: var(--surface);
+  }
+  .module-status-not_started { color: var(--text-faint); }
+  .module-status-drafting    { color: var(--blue); }
+  .module-status-in_review   { color: var(--purple); }
+  .module-status-revising    { color: var(--amber); }
+  .module-status-done        { color: var(--green); }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--text); }
+
+  .card-footer {
+    display: flex; justify-content: flex-end;
+    border-top: 0.5px solid var(--border-soft); padding-top: 10px; margin-top: 10px;
+  }
+
+  .inline-link {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 12px; color: var(--blue); text-decoration: none;
+    margin-top: 6px;
+  }
+  .inline-link:hover { text-decoration: underline; }
+
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .icon { width: 14px; height: 14px; flex-shrink: 0; }
+  .icon-sm { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .footer-note {
+    margin-top: 1.5rem; font-size: 12px; color: var(--text-faint); text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 0.75rem; }
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fields-grid, .fields-grid-2 { grid-template-columns: 1fr; }
+    .card-header { flex-wrap: wrap; }
+    .progress-bar { width: 80px; }
+    .card-header .badge { font-size: 11px; padding: 2px 8px; }
+    .pin-config-row { grid-template-columns: 1fr 1fr auto; }
+    .pin-config-row input[type="text"]:nth-child(2),
+    .pin-config-row select:nth-child(3),
+    .pin-config-row input:nth-child(4) { grid-column: span 2; }
+    .panel-header { flex-direction: column; align-items: flex-start; }
+    .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .tab { flex-shrink: 0; }
+    .canvas-summary { gap: 8px; }
+    .module-name-input { flex: 1 1 100%; }
+    .module-tracker-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-header">
+    <div>
+      <h1>Course dashboard</h1>
+      <p>LXD project tracking</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <span id="save-status" class="save-status">Loading…</span>
+      <button id="theme-toggle" class="btn-icon" title="Toggle dark mode" aria-label="Toggle dark mode"></button>
+      <button id="add-course-btn" class="btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Add course
+      </button>
+    </div>
+  </header>
+
+  <div id="metrics" class="metrics"></div>
+  <div id="courses" class="courses"></div>
+
+  <div class="footer-note">Changes sync to Google Sheet</div>
+</div>
+
+<script>
+// =====================================================================
+// CONFIG
+// =====================================================================
+var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKTgCUpRxKLB6Ner_MNlJD4yTUsWYnmmXhDUcafU4Y5eem4mzYwZjcM6eyAPxq6kqk/exec";
+
+// State
+var state = {
+  courses: [],
+  expanded: {},
+  activeTab: {},
+  configuring: {},
+  refreshing: {},
+  externalData: {},
+  highlightPin: {}  // courseId -> pinId, used to flash a pin row after "Edit" clicked
+};
+
+var STAGES = ["Planning", "Build", "Review", "Pre-launch", "Live", "Archived"];
+var STATUSES = ["On track", "At risk", "Blocked", "Done"];
+var COURSERA_STATUSES = ["", "Not on Coursera", "In setup", "Live", "Updating"];
+var MODULE_STATUSES = [
+  { value: "not_started", label: "Not started" },
+  { value: "drafting",    label: "Drafting" },
+  { value: "in_review",   label: "In review" },
+  { value: "revising",    label: "Revising" },
+  { value: "done",        label: "Done" }
+];
+
+var saveTimers = {};
+var SAVE_DEBOUNCE_MS = 500;
+
+// ---------- Theme ----------
+
+function initTheme() {
+  var saved = localStorage.getItem("dashboardTheme");
+  if (saved === "dark") document.body.classList.add("dark");
+  updateThemeButton();
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  var isDark = document.body.classList.contains("dark");
+  localStorage.setItem("dashboardTheme", isDark ? "dark" : "light");
+  updateThemeButton();
+}
+
+function updateThemeButton() {
+  var btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  var isDark = document.body.classList.contains("dark");
+  btn.innerHTML = svgIcon(isDark ? ICONS.sun : ICONS.moon, "icon");
+}
+
+// ---------- API ----------
+
+function apiCall(params) {
+  var url = APPS_SCRIPT_URL + "?" + Object.keys(params).map(function (k) {
+    return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+  }).join("&");
+  return fetch(url).then(function (r) { return r.json(); });
+}
+
+function loadCourses() {
+  setSaveStatus("loading", "Loading…");
+  return apiCall({ action: "load" }).then(function (resp) {
+    if (!resp.ok) throw new Error(resp.error);
+    state.courses = resp.courses;
+    if (state.courses.length > 0) state.expanded[state.courses[0].id] = true;
+    for (var i = 0; i < state.courses.length; i++) {
+      state.activeTab[state.courses[i].id] = "canvas";
+    }
+    setSaveStatus("saved", "Loaded");
+    render();
+  }).catch(function (err) {
+    setSaveStatus("error", "Load failed");
+    alert("Could not load courses: " + err.message + "\n\nCheck your APPS_SCRIPT_URL.");
+  });
+}
+
+function saveCourseDebounced(courseId) {
+  if (saveTimers[courseId]) clearTimeout(saveTimers[courseId]);
+  setSaveStatus("saving", "Saving…");
+  saveTimers[courseId] = setTimeout(function () {
+    var course = state.courses.find(function (c) { return c.id === courseId; });
+    if (!course) return;
+    apiCall({ action: "save", course: JSON.stringify(course) }).then(function (resp) {
+      if (!resp.ok) throw new Error(resp.error);
+      setSaveStatus("saved", "Saved");
+    }).catch(function (err) {
+      setSaveStatus("error", "Save failed");
+      console.error("Save failed:", err);
+    });
+  }, SAVE_DEBOUNCE_MS);
+}
+
+function setSaveStatus(kind, text) {
+  var el = document.getElementById("save-status");
+  el.className = "save-status " + kind;
+  el.textContent = text;
+}
+
+// ---------- Helpers: ID extraction from URLs ----------
+
+function extractDriveId(input) {
+  if (!input) return "";
+  var s = String(input).trim();
+  // If it's a URL, extract the ID between /d/ and the next / or end
+  var m = s.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // If it's a folder URL
+  var m2 = s.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  if (m2) return m2[1];
+  // Otherwise assume they pasted just the ID
+  return s;
+}
+
+function extractCanvasId(input) {
+  if (!input) return "";
+  var s = String(input).trim();
+  var m = s.match(/\/courses\/(\d+)/);
+  if (m) return m[1];
+  return s;
+}
+
+// ---------- Task analysis (overdue / pending) ----------
+
+function isOverdue(task) {
+  if (task.done || !task.due) return false;
+  // Parse YYYY-MM-DD as local midnight; compare to today at midnight.
+  var m = String(task.due).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return false;
+  var dueDate = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return dueDate < today;
+}
+
+function countTaskStats(course) {
+  var open = 0, overdue = 0;
+  for (var i = 0; i < course.tasks.length; i++) {
+    if (course.tasks[i].done) continue;
+    open++;
+    if (isOverdue(course.tasks[i])) overdue++;
+  }
+  return { open: open, overdue: overdue };
+}
+
+// ---------- Mutations ----------
+
+function updateField(courseId, field, value) {
+  var c = state.courses.find(function (c) { return c.id === courseId; });
+  if (!c) return;
+  // Auto-extract IDs if the user pasted a full URL
+  if (field === "driveFolderId") value = extractDriveId(value);
+  if (field === "canvasCourseId") value = extractCanvasId(value);
+  c[field] = value;
+  saveCourseDebounced(courseId);
+  updateHeaderAndMetrics(courseId, field);
+}
+
+function updateHeaderAndMetrics(courseId, field) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var card = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (card) {
+    if (field === "code")  { var el = card.querySelector(".card-code"); if (el) el.textContent = c.code; }
+    if (field === "title") { var el2 = card.querySelector(".card-name"); if (el2) el2.textContent = c.title; }
+    if (field === "stage" || field === "status" || field === "faculty" || field === "platform") {
+      rerenderCardHeader(courseId);
+    }
+    if (field === "progress") {
+      var fill = card.querySelector(".progress-fill");
+      var txt = card.querySelector(".progress-text");
+      if (fill) fill.style.width = (c.progress || 0) + "%";
+      if (txt) txt.textContent = (c.progress || 0) + "%";
+      var lbl = document.querySelector('.card-body [data-action="update-field"][data-course-id="' + courseId + '"][data-field="progress"]');
+      if (lbl && lbl.previousElementSibling) {
+        lbl.previousElementSibling.textContent = "Progress: " + (c.progress || 0) + "%";
+      }
+    }
+  }
+  if (field === "stage" || field === "status" || field === "progress") renderMetrics();
+}
+
+function rerenderCardHeader(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var oldHeader = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (!oldHeader) return;
+  oldHeader.outerHTML = renderCardHeaderHTML(c);
+  var newHeader = document.querySelector('[data-action="toggle"][data-course-id="' + courseId + '"]');
+  if (newHeader) {
+    newHeader.addEventListener("click", function () {
+      state.expanded[courseId] = !state.expanded[courseId];
+      render();
+    });
+  }
+}
+
+function addCourse() {
+  var newCourse = {
+    id: "c" + Date.now(),
+    code: "NEW 0000", title: "New course", faculty: "",
+    stage: "Planning", status: "On track", platform: "Canvas",
+    startDate: "", targetLaunch: "", launchSemester: "", progress: 0, notes: "",
+    driveFolderId: "", canvasCourseId: "",
+    courseraUrl: "", courseraStatus: "",
+    pins: [], tasks: [], modules: []
+  };
+  state.courses.push(newCourse);
+  state.expanded[newCourse.id] = true;
+  state.activeTab[newCourse.id] = "canvas";
+  saveCourseDebounced(newCourse.id);
+  render();
+}
+
+function deleteCourse(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (!confirm("Delete " + c.code + "?")) return;
+  apiCall({ action: "delete", id: courseId }).then(function (resp) {
+    if (!resp.ok) { alert("Delete failed: " + resp.error); return; }
+    state.courses = state.courses.filter(function (cc) { return cc.id !== courseId; });
+    setSaveStatus("saved", "Saved");
+    render();
+  });
+}
+
+function addTask(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.tasks.push({ id: "t" + Date.now(), text: "New task", done: false, due: "" });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function updateTask(courseId, taskId, field, value) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var t = c.tasks.find(function (tt) { return tt.id === taskId; });
+  if (!t) return;
+  t[field] = value;
+  saveCourseDebounced(courseId);
+  if (field === "done") render();
+  else rerenderCardHeader(courseId);
+}
+
+function deleteTask(courseId, taskId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.tasks = c.tasks.filter(function (tt) { return tt.id !== taskId; });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function addModule(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var nextNum = c.modules.length + 1;
+  c.modules.push({ id: "m" + Date.now(), name: "Module " + nextNum, status: "not_started", note: "" });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function updateModule(courseId, moduleId, field, value) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var m = c.modules.find(function (mm) { return mm.id === moduleId; });
+  if (!m) return;
+  m[field] = value;
+  saveCourseDebounced(courseId);
+  // Status change affects colour styling visible on the row itself; no re-render needed for text fields.
+  if (field === "status") {
+    // surgically update the color class on the <select>
+    var sel = document.querySelector('[data-action="update-module"][data-course-id="' + courseId + '"][data-module-id="' + moduleId + '"][data-field="status"]');
+    if (sel) {
+      sel.className = "module-status-select module-status-" + value;
+    }
+  }
+}
+
+function deleteModule(courseId, moduleId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.modules = c.modules.filter(function (mm) { return mm.id !== moduleId; });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function addPin(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (c.pins.length >= 3) { alert("Maximum 3 pins per course."); return; }
+  c.pins.push({ id: "p" + Date.now(), label: "New pin", fileId: "", type: "doc", mode: "firstParagraph", heading: "", cell: "", tab: "" });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function updatePin(courseId, pinId, field, value) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  var p = c.pins.find(function (pp) { return pp.id === pinId; });
+  if (!p) return;
+  if (field === "fileId") value = extractDriveId(value);
+  p[field] = value;
+  saveCourseDebounced(courseId);
+  if (field === "type" || field === "mode") render();
+}
+
+function deletePin(courseId, pinId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  c.pins = c.pins.filter(function (pp) { return pp.id !== pinId; });
+  saveCourseDebounced(courseId);
+  render();
+}
+
+function editPin(courseId, pinId) {
+  state.configuring[courseId] = true;
+  state.highlightPin[courseId] = pinId;
+  render();
+  // After render, scroll the highlighted row into view.
+  setTimeout(function () {
+    var row = document.querySelector('.pin-config-row[data-pin-id="' + pinId + '"]');
+    if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Remove highlight after a couple seconds
+    setTimeout(function () { delete state.highlightPin[courseId]; }, 2000);
+  }, 50);
+}
+
+// ---------- Refresh ----------
+
+function refreshCourse(courseId) {
+  var c = state.courses.find(function (cc) { return cc.id === courseId; });
+  if (!c) return;
+  if (!c.canvasCourseId && c.pins.length === 0) {
+    alert("Add a Canvas course ID or at least one pinned file first.");
+    return;
+  }
+  state.refreshing[courseId] = true;
+  render();
+
+  var calls = [];
+  var data = { canvas: null, pins: [] };
+
+  if (c.canvasCourseId) {
+    calls.push(apiCall({ action: "refreshCanvas", canvasCourseId: c.canvasCourseId })
+      .then(function (r) { data.canvas = r.ok ? r.data : { ok: false, error: r.error }; }));
+  }
+  if (c.pins.length > 0) {
+    calls.push(apiCall({ action: "refreshPins", pins: JSON.stringify(c.pins) })
+      .then(function (r) { data.pins = r.ok ? r.data : []; }));
+  }
+
+  Promise.all(calls).then(function () {
+    state.externalData[courseId] = data;
+    state.refreshing[courseId] = false;
+    render();
+  }).catch(function (err) {
+    state.refreshing[courseId] = false;
+    alert("Refresh failed: " + err.message);
+    render();
+  });
+}
+
+// ---------- Render ----------
+
+function esc(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, function (m) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+  });
+}
+
+function slug(s) { return String(s || "").replace(/\s+/g, "-"); }
+
+function svgIcon(path, cls) {
+  return '<svg class="' + (cls || "icon-sm") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+}
+
+var ICONS = {
+  chevronDown: '<polyline points="6 9 12 15 18 9"/>',
+  chevronRight: '<polyline points="9 18 15 12 9 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  circle: '<circle cx="12" cy="12" r="9"/>',
+  refresh: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  external: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  pin: '<path d="M12 17v5"/><path d="M9 10.76V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4.76c0 .63.28 1.22.76 1.62l2.5 2.12A2 2 0 0 1 19 16v0a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v0a2 2 0 0 1 .74-1.5l2.5-2.12A2 2 0 0 0 9 10.76z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6m11-11h-6m-10 0H1m17.66-7.66l-4.24 4.24m-7.07 7.07l-4.24 4.24m14.14 0l-4.24-4.24m-7.07-7.07L2.34 6.34"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  sheet: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  checkSquare: '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'
+};
+
+function render() {
+  renderMetrics();
+  renderCourses();
+}
+
+function renderMetrics() {
+  var activeCount = state.courses.filter(function (c) { return c.stage !== "Archived" && c.stage !== "Live"; }).length;
+  var atRiskCount = state.courses.filter(function (c) { return c.status === "At risk" || c.status === "Blocked"; }).length;
+  var openTasks = 0, overdueTasks = 0;
+  for (var i = 0; i < state.courses.length; i++) {
+    var s = countTaskStats(state.courses[i]);
+    openTasks += s.open;
+    overdueTasks += s.overdue;
+  }
+  var avgProgress = state.courses.length ? Math.round(state.courses.reduce(function (s, c) { return s + (c.progress || 0); }, 0) / state.courses.length) : 0;
+
+  var metrics = [
+    { label: "Active courses", value: activeCount },
+    { label: "At risk / blocked", value: atRiskCount },
+    { label: overdueTasks > 0 ? "Overdue tasks" : "Open tasks", value: overdueTasks > 0 ? overdueTasks : openTasks, danger: overdueTasks > 0 },
+    { label: "Avg progress", value: avgProgress + "%" }
+  ];
+  document.getElementById("metrics").innerHTML = metrics.map(function (m) {
+    var valColor = m.danger ? ' style="color: var(--red);"' : '';
+    return '<div class="metric"><div class="metric-label">' + esc(m.label) + '</div><div class="metric-value"' + valColor + '>' + esc(m.value) + '</div></div>';
+  }).join("");
+}
+
+function renderCourses() {
+  var html = state.courses.map(renderCourseCard).join("");
+  document.getElementById("courses").innerHTML = html;
+  wireCardEvents();
+}
+
+function renderCardHeaderHTML(c) {
+  var expanded = !!state.expanded[c.id];
+  var faculty = c.faculty ? esc(c.faculty) + " · " : "";
+  var stats = countTaskStats(c);
+  var moduleCount = (c.modules && c.modules.length) || 0;
+
+  // Build the chips that live next to the stage/status badges.
+  // Overdue chip only appears when there's at least one overdue task — it should earn its space.
+  // Pending chip is always shown when there are open tasks, because "how much is waiting" is a real signal.
+  var chips = "";
+  if (stats.overdue > 0) {
+    chips += '<span class="header-chip overdue" title="Overdue tasks">! ' + stats.overdue + ' overdue</span>';
+  }
+  if (stats.open > 0) {
+    chips += '<span class="header-chip tasks" title="Open tasks">' + stats.open + ' open</span>';
+  }
+
+  var metaBits = [];
+  if (c.faculty) metaBits.push(esc(c.faculty));
+  if (c.platform) metaBits.push(esc(c.platform));
+  if (moduleCount > 0) metaBits.push(moduleCount + " modules");
+  if (c.pins.length > 0) metaBits.push(c.pins.length + " pinned");
+  var metaLine = metaBits.join(" · ");
+
+  return '<div class="card-header" data-action="toggle" data-course-id="' + c.id + '">' +
+    svgIcon(expanded ? ICONS.chevronDown : ICONS.chevronRight, "icon card-chevron") +
+    '<div class="card-titles">' +
+      '<div class="card-title-row">' +
+        '<span class="card-code">' + esc(c.code) + '</span>' +
+        '<span class="card-name">' + esc(c.title) + '</span>' +
+      '</div>' +
+      (metaLine ? '<div class="card-meta">' + metaLine + '</div>' : '') +
+    '</div>' +
+    chips +
+    '<span class="badge badge-stage-' + slug(c.stage) + '">' + esc(c.stage) + '</span>' +
+    '<span class="badge badge-status-' + slug(c.status) + '">' + esc(c.status) + '</span>' +
+    '<div class="progress-bar"><div class="progress-fill" style="width: ' + (c.progress || 0) + '%"></div></div>' +
+    '<span class="progress-text">' + (c.progress || 0) + '%</span>' +
+  '</div>';
+}
+
+function renderCourseCard(c) {
+  var expanded = !!state.expanded[c.id];
+  if (!expanded) return '<div class="card">' + renderCardHeaderHTML(c) + '</div>';
+  return '<div class="card">' + renderCardHeaderHTML(c) + renderCardBody(c) + '</div>';
+}
+
+function renderCardBody(c) {
+  var tab = state.activeTab[c.id] || "canvas";
+  return '<div class="card-body">' +
+    renderExternalPanel(c, tab) +
+    renderFieldsGrid(c) +
+    renderSourceIds(c) +
+    renderNotes(c) +
+    '<div class="card-footer">' +
+      '<button class="btn btn-sm btn-danger" data-action="delete-course" data-course-id="' + c.id + '">' +
+        svgIcon(ICONS.trash) + ' Delete course</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderExternalPanel(c, tab) {
+  var refreshing = !!state.refreshing[c.id];
+  var moduleCount = (c.modules && c.modules.length) || 0;
+  var stats = countTaskStats(c);
+  var tasksTabLabel = 'Tasks' + (stats.open > 0 ? ' (' + stats.open + ')' : '') +
+    (stats.overdue > 0 ? '<span class="tab-overdue">' + stats.overdue + '</span>' : '');
+
+  var tabButtons = '<div class="tabs">' +
+    '<button class="tab ' + (tab === "canvas" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="canvas">' +
+      svgIcon(ICONS.book) + ' Canvas</button>' +
+    '<button class="tab ' + (tab === "pinned" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="pinned">' +
+      svgIcon(ICONS.pin) + ' Pinned' + (c.pins.length > 0 ? ' (' + c.pins.length + ')' : '') + '</button>' +
+    '<button class="tab ' + (tab === "modules" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="modules">' +
+      svgIcon(ICONS.layers) + ' Modules' + (moduleCount > 0 ? ' (' + moduleCount + ')' : '') + '</button>' +
+    '<button class="tab ' + (tab === "tasks" ? "active" : "") + '" data-action="set-tab" data-course-id="' + c.id + '" data-tab="tasks">' +
+      svgIcon(ICONS.checkSquare) + ' ' + tasksTabLabel + '</button>' +
+  '</div>';
+
+  var content = '';
+  if (tab === "canvas")  content = renderCanvasTab(c);
+  if (tab === "pinned")  content = renderPinnedTab(c);
+  if (tab === "modules") content = renderModulesTab(c);
+  if (tab === "tasks")   content = renderTasksTab(c);
+
+  // Only Canvas and Pinned pull from external sources; Refresh only appears on those tabs.
+  var showRefresh = (tab === "canvas" || tab === "pinned");
+
+  return '<div style="margin-bottom: 14px;">' +
+    '<div class="panel-header">' +
+      '<div class="panel-title">Details</div>' +
+      '<div class="panel-actions">' +
+        (showRefresh ?
+          '<button class="btn btn-sm" data-action="refresh" data-course-id="' + c.id + '" ' + (refreshing ? 'disabled' : '') + '>' +
+            '<span class="' + (refreshing ? 'spin' : '') + '">' + svgIcon(ICONS.refresh) + '</span> ' +
+            (refreshing ? 'Refreshing' : 'Refresh') + '</button>' : '') +
+      '</div>' +
+    '</div>' +
+    tabButtons +
+    '<div class="tab-content">' + content + '</div>' +
+  '</div>';
+}
+
+function renderCanvasTab(c) {
+  var data = state.externalData[c.id] && state.externalData[c.id].canvas;
+  if (!data) return '<div class="empty">' + (c.canvasCourseId ? 'Click Refresh to pull modules from Canvas.' : 'Add a Canvas course ID below, then Refresh.') + '</div>';
+  if (!data.ok) return '<div class="empty" style="color: var(--red);">Canvas error: ' + esc(data.error) + '</div>';
+
+  var publishColor = data.coursePublished ? 'var(--green)' : 'var(--amber)';
+  var summary = '<div class="canvas-summary">' +
+    '<div><span class="label">Modules:</span> <strong>' + data.publishedModules + '/' + data.totalModules + '</strong> published</div>' +
+    '<div><span class="label">Course:</span> <span style="color: ' + publishColor + '; font-weight: 500;">' + (data.coursePublished ? 'published' : 'unpublished') + '</span></div>' +
+  '</div>';
+
+  var moduleRows = data.modules.length === 0 ? '<div class="empty">No modules in this course yet.</div>' :
+    '<div class="module-list">' + data.modules.map(function (m) {
+      var dotCls = m.published ? "module-dot published" : "module-dot unpublished";
+      var stateText = m.published ? "published" : "unpublished";
+      return '<div class="module-row">' +
+        '<span class="' + dotCls + '"></span>' +
+        '<a class="module-row-name" href="' + esc(m.url) + '" target="_blank" rel="noopener">' + esc(m.name) + '</a>' +
+        '<span class="module-row-state">' + stateText + '</span>' +
+      '</div>';
+    }).join("") + '</div>';
+
+  return summary + moduleRows +
+    '<a class="inline-link" href="' + esc(data.courseUrl) + '" target="_blank" rel="noopener">Open course in Canvas ' + svgIcon(ICONS.external) + '</a>';
+}
+
+function renderPinnedTab(c) {
+  var configuring = !!state.configuring[c.id];
+  var header = '<div class="section-header">' +
+    '<div style="font-size: 12px; color: var(--text-muted);">' + c.pins.length + ' of 3 pins</div>' +
+    '<button class="btn btn-xs" data-action="toggle-config" data-course-id="' + c.id + '">' +
+      svgIcon(ICONS.settings) + ' ' + (configuring ? 'Done' : 'Configure pins') + '</button>' +
+  '</div>';
+
+  var configEditor = configuring ? renderPinConfig(c) : '';
+
+  var results = '';
+  if (c.pins.length === 0 && !configuring) {
+    results = '<div class="empty">No pinned files. Click Configure pins to add up to 3.</div>';
+  } else {
+    var pinData = state.externalData[c.id] && state.externalData[c.id].pins;
+    if (pinData && pinData.length > 0) {
+      results = pinData.map(function (p) { return renderPinResult(c, p); }).join("");
+    } else if (!configuring) {
+      results = '<div class="empty">Click Refresh to pull content from pinned files.</div>';
+    }
+  }
+  return header + configEditor + results;
+}
+
+function renderPinConfig(c) {
+  if (c.pins.length === 0) {
+    return '<div class="pin-config">' +
+      '<div class="empty" style="padding: 4px 0;">No pins yet.</div>' +
+      '<button class="btn btn-sm" data-action="add-pin" data-course-id="' + c.id + '">' + svgIcon(ICONS.plus) + ' Add pin</button>' +
+    '</div>';
+  }
+
+  var highlighted = state.highlightPin[c.id];
+
+  var rows = c.pins.map(function (p) {
+    var modeOrCell = '';
+    if (p.type === "doc") {
+      modeOrCell = '<select data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="mode">' +
+        '<option value="heading"' + (p.mode === "heading" ? " selected" : "") + '>Specific heading</option>' +
+        '<option value="firstParagraph"' + (p.mode === "firstParagraph" ? " selected" : "") + '>First paragraph</option>' +
+        '<option value="headings"' + (p.mode === "headings" ? " selected" : "") + '>Headings list</option>' +
+      '</select>';
+    } else {
+      var ph = p.type === "sheet-cell" ? "B2" : "A2:C10";
+      modeOrCell = '<input class="mono" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="cell" value="' + esc(p.cell || "") + '" placeholder="' + ph + '" />';
+    }
+
+    var tabInput = (p.type === "doc") ?
+      '<input class="pin-tab-input" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="tab" value="' + esc(p.tab || "") + '" placeholder="Tab name (leave blank for single-tab docs)" />' : '';
+
+    var headingInput = (p.type === "doc" && p.mode === "heading") ?
+      '<input class="pin-heading-input" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="heading" value="' + esc(p.heading || "") + '" placeholder="Heading text to pull" />' : '';
+
+    var highlightCls = (highlighted === p.id) ? " highlighted" : "";
+    return '<div class="pin-config-row' + highlightCls + '" data-pin-id="' + p.id + '">' +
+      '<input type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="label" value="' + esc(p.label || "") + '" placeholder="Label" />' +
+      '<input class="mono" type="text" data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="fileId" value="' + esc(p.fileId || "") + '" placeholder="File ID or paste URL" />' +
+      '<select data-action="update-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '" data-field="type">' +
+        '<option value="doc"' + (p.type === "doc" ? " selected" : "") + '>Doc</option>' +
+        '<option value="sheet-cell"' + (p.type === "sheet-cell" ? " selected" : "") + '>Sheet cell</option>' +
+        '<option value="sheet-range"' + (p.type === "sheet-range" ? " selected" : "") + '>Sheet range</option>' +
+      '</select>' +
+      modeOrCell +
+      '<button class="icon-btn" data-action="delete-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+      tabInput +
+      headingInput +
+    '</div>';
+  }).join("");
+
+  var addBtn = '<button class="btn btn-sm" data-action="add-pin" data-course-id="' + c.id + '"' + (c.pins.length >= 3 ? " disabled" : "") + '>' + svgIcon(ICONS.plus) + ' Add pin</button>';
+
+  return '<div class="pin-config">' + rows + '<div style="margin-top: 8px;">' + addBtn + '</div></div>';
+}
+
+function renderPinResult(c, p) {
+  var r = p.result;
+  var iconPath = p.type === "doc" ? ICONS.file : ICONS.sheet;
+  var modeText;
+  if (p.type === "doc") {
+    if (p.mode === "heading") modeText = "heading: " + (p.heading || "—");
+    else if (p.mode === "headings") modeText = "headings list";
+    else modeText = "first paragraph";
+    if (p.tab) modeText = "tab: " + p.tab + " · " + modeText;
+  } else if (p.type === "sheet-cell") {
+    modeText = "cell " + (p.cell || "—");
+  } else {
+    modeText = "range " + (p.cell || "—");
+  }
+
+  var body = '';
+  if (r && r.ok) {
+    if (r.content) body += '<div class="quote">"' + esc(r.content) + '"</div>';
+    if (r.headings) {
+      body += '<ul style="margin: 4px 0; padding-left: 18px; color: var(--gray);">' +
+        r.headings.map(function (h) { return '<li style="font-size: 12px;">' + esc(h) + '</li>'; }).join("") + '</ul>';
+    }
+    if (r.value !== undefined && r.value !== null) body += '<div class="value">' + esc(r.value) + '</div>';
+    if (r.table) {
+      body += '<table class="pin-table">' + r.table.map(function (row) {
+        return '<tr>' + row.map(function (cell) { return '<td>' + esc(cell) + '</td>'; }).join("") + '</tr>';
+      }).join("") + '</table>';
+    }
+  } else if (r && !r.ok) {
+    body = '<div class="pin-error-box">' +
+      '<div class="pin-error-msg">' + esc(r.error || "Could not fetch") + '</div>' +
+      '<button class="btn btn-xs" data-action="edit-pin" data-course-id="' + c.id + '" data-pin-id="' + p.id + '">' +
+        svgIcon(ICONS.edit) + ' Edit pin</button>' +
+    '</div>';
+  } else {
+    body = '<div class="empty">Not refreshed yet.</div>';
+  }
+
+  var link = (r && r.url) ? '<a class="inline-link" style="margin: 0; font-size: 11px;" href="' + esc(r.url) + '" target="_blank" rel="noopener">Open ' + svgIcon(ICONS.external) + '</a>' : '';
+
+  return '<div class="pin">' +
+    '<div class="pin-header">' +
+      '<div class="pin-label">' + svgIcon(iconPath) + ' ' + esc(p.label) + ' <span class="pin-mode">' + esc(modeText) + '</span></div>' +
+      link +
+    '</div>' +
+    '<div class="pin-body">' + body + '</div>' +
+  '</div>';
+}
+
+function renderFieldsGrid(c) {
+  return '<div class="fields-grid">' +
+    labelInput(c.id, "code", "Code", c.code) +
+    labelInput(c.id, "title", "Title", c.title) +
+    labelInput(c.id, "faculty", "Faculty", c.faculty) +
+    labelSelect(c.id, "stage", "Stage", c.stage, STAGES) +
+    labelSelect(c.id, "status", "Status", c.status, STATUSES) +
+    labelInput(c.id, "platform", "Platform", c.platform) +
+    labelDate(c.id, "startDate", "Start date", c.startDate) +
+    labelDate(c.id, "targetLaunch", "Target launch", c.targetLaunch) +
+    labelInput(c.id, "launchSemester", "Launch semester", c.launchSemester, "e.g. Fall 2026") +
+    '<div style="grid-column: 1 / -1;"><div class="field-label">Progress: ' + (c.progress || 0) + '%</div>' +
+      '<input type="range" min="0" max="100" step="1" value="' + (c.progress || 0) + '" data-action="update-field" data-course-id="' + c.id + '" data-field="progress" data-type="number" /></div>' +
+  '</div>';
+}
+
+function renderSourceIds(c) {
+  var courseraOpts = COURSERA_STATUSES.map(function (s) {
+    var label = s === "" ? "—" : s;
+    return '<option value="' + esc(s) + '"' + (s === c.courseraStatus ? " selected" : "") + '>' + esc(label) + '</option>';
+  }).join("");
+
+  return '<div class="fields-grid">' +
+    labelInput(c.id, "driveFolderId", "Drive folder (ID or URL)", c.driveFolderId, "paste URL or ID") +
+    labelInput(c.id, "canvasCourseId", "Canvas course (ID or URL)", c.canvasCourseId, "paste URL or ID") +
+    '<div></div>' +
+    labelInput(c.id, "courseraUrl", "Coursera URL", c.courseraUrl, "https://...") +
+    '<div><div class="field-label">Coursera status</div>' +
+      '<select class="field-select" data-action="update-field" data-course-id="' + c.id + '" data-field="courseraStatus">' + courseraOpts + '</select></div>' +
+    '<div></div>' +
+  '</div>';
+}
+
+function renderNotes(c) {
+  return '<div style="margin-bottom: 14px;">' +
+    '<div class="field-label">Notes</div>' +
+    '<textarea class="field-textarea" rows="2" data-action="update-field" data-course-id="' + c.id + '" data-field="notes">' + esc(c.notes) + '</textarea>' +
+  '</div>';
+}
+
+function renderModulesTab(c) {
+  var addBtn = '<button class="btn btn-xs" data-action="add-module" data-course-id="' + c.id + '">' + svgIcon(ICONS.plus) + ' Add module</button>';
+
+  if (!c.modules || c.modules.length === 0) {
+    return '<div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">' + addBtn + '</div>' +
+      '<div class="empty" style="padding: 6px 0;">No modules yet. Click Add module to start tracking.</div>';
+  }
+
+  var rows = c.modules.map(function (m) {
+    var statusOpts = MODULE_STATUSES.map(function (s) {
+      return '<option value="' + s.value + '"' + (s.value === m.status ? " selected" : "") + '>' + s.label + '</option>';
+    }).join("");
+
+    return '<div class="module-tracker-row">' +
+      '<input class="module-name-input" type="text" value="' + esc(m.name) + '" data-action="update-module" data-course-id="' + c.id + '" data-module-id="' + m.id + '" data-field="name" />' +
+      '<select class="module-status-select module-status-' + (m.status || "not_started") + '" data-action="update-module" data-course-id="' + c.id + '" data-module-id="' + m.id + '" data-field="status">' + statusOpts + '</select>' +
+      '<input class="module-note" type="text" value="' + esc(m.note || "") + '" placeholder="Note (optional)" data-action="update-module" data-course-id="' + c.id + '" data-module-id="' + m.id + '" data-field="note" />' +
+      '<button class="module-delete" data-action="delete-module" data-course-id="' + c.id + '" data-module-id="' + m.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+    '</div>';
+  }).join("");
+
+  return '<div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">' + addBtn + '</div>' +
+    '<div class="modules-tracker">' + rows + '</div>';
+}
+
+function renderTasksTab(c) {
+  var addBtn = '<button class="btn btn-xs" data-action="add-task" data-course-id="' + c.id + '">' + svgIcon(ICONS.plus) + ' Add task</button>';
+
+  if (c.tasks.length === 0) {
+    return '<div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">' + addBtn + '</div>' +
+      '<div class="empty" style="padding: 6px 0;">No tasks yet.</div>';
+  }
+
+  var tasks = c.tasks.map(function (t) {
+    var overdue = isOverdue(t);
+    var taskCls = "task" + (overdue ? " overdue" : "");
+    var checkCls = t.done ? "task-check done" : "task-check";
+    var textCls = t.done ? "task-text done" : "task-text";
+    var icon = t.done ? ICONS.check : ICONS.circle;
+    return '<div class="' + taskCls + '">' +
+      '<button class="' + checkCls + '" data-action="toggle-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '">' + svgIcon(icon, "icon") + '</button>' +
+      '<input class="' + textCls + '" type="text" value="' + esc(t.text) + '" data-action="update-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '" data-field="text" />' +
+      '<input class="task-due" type="date" value="' + esc(t.due) + '" data-action="update-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '" data-field="due" />' +
+      '<button class="task-delete" data-action="delete-task" data-course-id="' + c.id + '" data-task-id="' + t.id + '">' + svgIcon(ICONS.trash) + '</button>' +
+    '</div>';
+  }).join("");
+
+  return '<div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">' + addBtn + '</div>' +
+    '<div class="tasks">' + tasks + '</div>';
+}
+
+function labelInput(courseId, field, label, value, placeholder) {
+  return '<div><div class="field-label">' + esc(label) + '</div>' +
+    '<input class="field-input" type="text" value="' + esc(value) + '" placeholder="' + esc(placeholder || "") + '" data-action="update-field" data-course-id="' + courseId + '" data-field="' + field + '" /></div>';
+}
+
+function labelDate(courseId, field, label, value) {
+  return '<div><div class="field-label">' + esc(label) + '</div>' +
+    '<input class="field-input" type="date" value="' + esc(value) + '" data-action="update-field" data-course-id="' + courseId + '" data-field="' + field + '" /></div>';
+}
+
+function labelSelect(courseId, field, label, value, options) {
+  var opts = options.map(function (o) {
+    return '<option value="' + esc(o) + '"' + (o === value ? " selected" : "") + '>' + esc(o) + '</option>';
+  }).join("");
+  return '<div><div class="field-label">' + esc(label) + '</div>' +
+    '<select class="field-select" data-action="update-field" data-course-id="' + courseId + '" data-field="' + field + '">' + opts + '</select></div>';
+}
+
+// ---------- Event wiring ----------
+
+function wireCardEvents() {
+  document.querySelectorAll('[data-action="toggle"]').forEach(function (el) {
+    el.addEventListener("click", function () {
+      state.expanded[el.dataset.courseId] = !state.expanded[el.dataset.courseId];
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="set-tab"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      state.activeTab[el.dataset.courseId] = el.dataset.tab;
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="refresh"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); refreshCourse(el.dataset.courseId); });
+  });
+
+  document.querySelectorAll('[data-action="toggle-config"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      state.configuring[el.dataset.courseId] = !state.configuring[el.dataset.courseId];
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-action="update-field"]').forEach(function (el) {
+    var evt = (el.tagName === "SELECT") ? "change" : "input";
+    el.addEventListener(evt, function (e) {
+      e.stopPropagation();
+      var value = el.value;
+      if (el.dataset.type === "number") value = parseInt(value, 10) || 0;
+      updateField(el.dataset.courseId, el.dataset.field, value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.querySelectorAll('[data-action="update-task"]').forEach(function (el) {
+    el.addEventListener("input", function (e) {
+      e.stopPropagation();
+      updateTask(el.dataset.courseId, el.dataset.taskId, el.dataset.field, el.value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+
+  document.querySelectorAll('[data-action="toggle-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var c = state.courses.find(function (cc) { return cc.id === el.dataset.courseId; });
+      if (!c) return;
+      var t = c.tasks.find(function (tt) { return tt.id === el.dataset.taskId; });
+      if (!t) return;
+      updateTask(el.dataset.courseId, el.dataset.taskId, "done", !t.done);
+    });
+  });
+
+  document.querySelectorAll('[data-action="add-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); addTask(el.dataset.courseId); });
+  });
+
+  document.querySelectorAll('[data-action="delete-task"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deleteTask(el.dataset.courseId, el.dataset.taskId); });
+  });
+
+  // Modules
+  document.querySelectorAll('[data-action="add-module"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); addModule(el.dataset.courseId); });
+  });
+  document.querySelectorAll('[data-action="update-module"]').forEach(function (el) {
+    var evt = (el.tagName === "SELECT") ? "change" : "input";
+    el.addEventListener(evt, function (e) {
+      e.stopPropagation();
+      updateModule(el.dataset.courseId, el.dataset.moduleId, el.dataset.field, el.value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+  document.querySelectorAll('[data-action="delete-module"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deleteModule(el.dataset.courseId, el.dataset.moduleId); });
+  });
+
+  // Pins
+  document.querySelectorAll('[data-action="update-pin"]').forEach(function (el) {
+    var evt = (el.tagName === "SELECT") ? "change" : "input";
+    el.addEventListener(evt, function (e) {
+      e.stopPropagation();
+      updatePin(el.dataset.courseId, el.dataset.pinId, el.dataset.field, el.value);
+    });
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+  });
+  document.querySelectorAll('[data-action="add-pin"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); addPin(el.dataset.courseId); });
+  });
+  document.querySelectorAll('[data-action="delete-pin"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deletePin(el.dataset.courseId, el.dataset.pinId); });
+  });
+  document.querySelectorAll('[data-action="edit-pin"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); editPin(el.dataset.courseId, el.dataset.pinId); });
+  });
+
+  document.querySelectorAll('[data-action="delete-course"]').forEach(function (el) {
+    el.addEventListener("click", function (e) { e.stopPropagation(); deleteCourse(el.dataset.courseId); });
+  });
+}
+
+// ---------- Boot ----------
+
+document.getElementById("add-course-btn").addEventListener("click", addCourse);
+document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+
+initTheme();
+
+if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("script.google.com") === -1) {
+  document.getElementById("courses").innerHTML =
+    '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">' +
+      '<p style="font-size: 15px; font-weight: 500; color: var(--text);">Setup needed</p>' +
+      '<p>Paste your Apps Script deployment URL into the <code>APPS_SCRIPT_URL</code> constant near the top of this file.</p>' +
+    '</div>';
+  setSaveStatus("error", "Not configured");
+} else {
+  loadCourses();
+}
+</script>
+</body>
+</html>
